@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     //Computations
     
-    computation C_init("mean_init", {i,j}, C(i,j)*beta);
+    computation C_init("C_init", {i,j}, C(i,j)*beta);
     computation C_out("C_out", {i,j,k}, p_float64);
     C_out.set_expression(C_out(i,j,k)+A(i,k)*B(k,j)*alpha);
     
