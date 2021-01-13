@@ -126,14 +126,6 @@ int main(int argc, char** argv)
           duration_vector_2.push_back(end - start);
         }
     }
-    /***************************/
-    print_buffer(b_data);
-std::cout << "Tiramisu " << std::endl;
-        print_buffer(b_corr);
-        std::cout << "Reference " << std::endl;
-        print_buffer(b_corr_ref);
-        std::cout << b_corr(1,0) - b_corr_ref(1,0)<< std::endl;
-    /******************************/
 
     print_time("performance_cpu.csv", "correlation",
 	       {"Ref", "Tiramisu"},
