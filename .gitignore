@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# Benchmark results
+performance_cpu.csv
