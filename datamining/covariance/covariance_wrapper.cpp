@@ -13,24 +13,24 @@ int covariance_ref(Halide::Buffer<double> data, Halide::Buffer<double> cov)
 
     for (j = 0; j < M; j++)
     {
-      mean(j)=0;
+      mean(j) = 0.0;
       for (i = 0; i < N; i++)
-        mean(j) += data(j,i);
+        mean(j) += data(i, j);
       mean(j) /= N;
     }
 
   for (i = 0; i < N; i++)
     for (j = 0; j < M; j++)
-      data(j,i) -= mean(j);
+      data(i, j) -= mean(j);
 
   for (i = 0; i < M; i++)
     for (j = i; j < M; j++)
       {
-        cov(j,i) = 0;
+        cov(i, j) = 0.0;
         for (k = 0; k < N; k++)
-	  cov(j,i) += data(i,k) * data(j,k);
-        cov(j,i) /= (N - 1);
-        cov(i,j) = cov(j,i);  
+	  cov(i, j) += data(k, i) * data(k, j);
+        cov(i, j) /= (N - 1.0);
+        cov(j, i) = cov(i, j);
       }
     return 0;
 }
@@ -62,16 +62,22 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-            init_buffer(b_cov_ref, (double) 1);
+          init_buffer(b_cov_ref, (double) 1);
 	        init_buffer(b_data, (double) 2);
-            b_data(5,2)=52;
-            auto start = std::chrono::high_resolution_clock::now();
+          b_data(5,2)=52;
+          
+          transpose(b_data);
+          transpose(b_cov_ref);
+          auto start = std::chrono::high_resolution_clock::now();
 
 	        if (run_ref)
 	    	    covariance_ref(b_data, b_cov_ref);
 
 	        auto end = std::chrono::high_resolution_clock::now();
-            duration_vector_1.push_back(end - start);
+          transpose(b_data);
+          transpose(b_cov_ref);
+          
+          duration_vector_1.push_back(end - start);
         }
     }
 
