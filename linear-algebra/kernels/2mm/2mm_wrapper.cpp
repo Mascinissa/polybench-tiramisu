@@ -1,7 +1,7 @@
 #include <Halide.h>
 #include <tiramisu/tiramisu.h>
 #include <iostream>
-#include "generated_b_2mm.o.h"
+#include "generated_2mm.o.h"
 #include "benchmarks.h"
 #include <tiramisu/utils.h>
 
