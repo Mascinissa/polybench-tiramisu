@@ -44,8 +44,8 @@ int main(int argc, char **argv)
     // Layer III
     // -------------------------------------------------------
     //Input Buffers
-    buffer b_A("b_A", {M,M}, p_float64, a_input);
-    buffer b_C("b_C", {M,N}, p_float64, a_output);
+    buffer b_A("b_A", {N,M}, p_float64, a_input);
+    buffer b_C("b_C", {N,N}, p_float64, a_output);
     
 
     //Store inputs
