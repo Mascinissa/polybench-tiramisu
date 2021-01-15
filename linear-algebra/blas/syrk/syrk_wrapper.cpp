@@ -48,9 +48,8 @@ int main(int argc, char** argv)
         for (int i = 0; i < NB_TESTS; ++i)
         {
 	      init_buffer(b_A, (double) 2);
-          for (int i = 0; i < M; ++i)  
-            for (int j = 0; j < N; ++j)
-              b_C_ref(j,i)=pow(-1,(j%2))*i+pow(-1,((j+i)%2))*j;
+	      init_buffer(b_C_ref, (double) 3);
+
 
           transpose(b_C_ref);
           transpose(b_A);
@@ -72,9 +71,7 @@ int main(int argc, char** argv)
         for (int i = 0; i < NB_TESTS; ++i)
         {
 	      init_buffer(b_A, (double) 2);
-          for (int i = 0; i < M; ++i)  
-            for (int j = 0; j < N; ++j)
-              b_C(j,i)=pow(-1,(j%2))*i+pow(-1,((j+i)%2))*j;
+	      init_buffer(b_C, (double) 3);
 
           auto start = std::chrono::high_resolution_clock::now();
 	        if (run_tiramisu)
