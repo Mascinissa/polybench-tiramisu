@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
     //REFERENCE
     {
-        for (int i = 0; i < 1; ++i)
+        for (int i = 0; i < NB_TESTS; ++i)
         {
 	      
           init_array(b_A_ref,b_Q_ref,b_R_ref);
