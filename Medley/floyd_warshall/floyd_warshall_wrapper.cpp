@@ -14,7 +14,7 @@ int floyd_warshall_ref(Halide::Buffer<double> path)
     {
       for(i = 0; i < N; i++)
         for (j = 0; j < N; j++)
-            path(i, j) = path(i, j) < (path(i, k) + path(k, j)) ? path(i, j) : path(i, k) + path(k, j);
+            path(i, j) = std::min(path(i, j), path(i, k) + path(k, j));
     }
   return 0;
 }
