@@ -20,7 +20,6 @@ int main(int argc, char **argv)
     
     //inputs
     input paths("paths", {i, j}, p_float64);
-    input B("B", {i, j}, p_float64);
 
     //Computations
     computation paths_update("paths_update", {k,i,j}, p_float64);
