@@ -24,12 +24,12 @@ int main(int argc, char **argv)
     input B("B", {i_f, j_f, k_f}, p_float64);
 
     //Computations
-    computation B_out("B_out", {t,k,i,j}, (A(i+1, j, k) - A(i, j, k)*2.0 + A(i-1, j, k))*0.125
+    computation B_out("B_out", {t,i,j,k}, (A(i+1, j, k) - A(i, j, k)*2.0 + A(i-1, j, k))*0.125
                                         + (A(i, j+1, k) - A(i, j, k)*2.0 + A(i, j-1, k))*0.125
                                         + (A(i, j, k+1) - A(i, j, k)*2.0 + A(i, j, k-1))*0.125
                                         + A(i, j, k));
 
-    computation A_out("A_out", {t,k,i,j}, (B(i+1, j, k) - B(i, j, k)*2.0 + B(i-1, j, k))*0.125
+    computation A_out("A_out", {t,i,j,k}, (B(i+1, j, k) - B(i, j, k)*2.0 + B(i-1, j, k))*0.125
                                         + (B(i, j+1, k) - B(i, j, k)*2.0 + B(i, j-1, k))*0.125
                                         + (B(i, j, k+1) - B(i, j, k)*2.0 + B(i, j, k-1))*0.125
                                         + B(i, j, k));
