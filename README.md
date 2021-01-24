@@ -27,19 +27,19 @@ Example:
 |deriche	|	Edge detection filter|
 |doitgen	|	Multi-resolution analysis kernel (MADNESS)|
 |durbin		|Toeplitz system solver|
-|fdtd-2d	|	2-D Finite Different Time Domain Kernel|
+|fdtd_2d	|	2-D Finite Different Time Domain Kernel|
 |gemm		|Matrix-multiply C=alpha.A.B+beta.C|
 |gemver		|Vector Multiplication and Matrix Addition|
 |gesummv		|Scalar, Vector and Matrix Multiplication|
 |gramschmidt	|Gram-Schmidt decomposition|
 |head-3d		|Heat equation over 3D data domain|
-|jacobi-1D	|1-D Jacobi stencil computation|
-|jacobi-2D	|2-D Jacobi stencil computation|
+|jacobi_1D	|1-D Jacobi stencil computation|
+|jacobi_2D	|2-D Jacobi stencil computation|
 |lu		|LU decomposition|
 |ludcmp		|LU decomposition followed by FS|
 |mvt		|Matrix Vector Product and Transpose|
 |nussinov	|Dynamic programming algorithm for sequence alignment|
-|seidel		|2-D Seidel stencil computation|
+|seidel_2d		|2-D Seidel stencil computation|
 |symm		|Symmetric matrix-multiply|
 |syr2k		|Symmetric rank-2k operations|
 |syrk		|Symmetric rank-k operations|
