@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_gemver.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "gemver.h"
 #include <tiramisu/utils.h>
 
 
@@ -58,16 +59,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-	      init_buffer(b_A, (double) 1);
-	      init_buffer(b_u1, (double) 2);
-	      init_buffer(b_u2, (double) 3);
-	      init_buffer(b_v1, (double) 4);
-	      init_buffer(b_v2, (double) 5);
-	      init_buffer(b_y, (double) 6);
-	      init_buffer(b_z, (double) 7);
-	      init_buffer(b_A_hat_ref, (double) 8);
-	      init_buffer(b_x_ref, (double) 9);
-	      init_buffer(b_w_ref, (double) 10);
+	      init_array(b_A, b_u1, b_u2, b_v1, b_v2, b_y, b_z, b_x_ref, b_w_ref);
 
           transpose(b_A);
           transpose(b_A_hat_ref);
@@ -88,16 +80,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_A, (double) 1);
-	      init_buffer(b_u1, (double) 2);
-	      init_buffer(b_u2, (double) 3);
-	      init_buffer(b_v1, (double) 4);
-	      init_buffer(b_v2, (double) 5);
-	      init_buffer(b_y, (double) 6);
-	      init_buffer(b_z, (double) 7);
-	      init_buffer(b_A_hat, (double) 8);
-	      init_buffer(b_x, (double) 9);
-	      init_buffer(b_w, (double) 10);
+	      init_array(b_A, b_u1, b_u2, b_v1, b_v2, b_y, b_z, b_x, b_w);
 
           auto start = std::chrono::high_resolution_clock::now();
 	        if (run_tiramisu)
@@ -116,9 +99,9 @@ int main(int argc, char** argv)
 	       {median(duration_vector_1), median(duration_vector_2)});
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu){
-        compare_buffers("gemver A_hat", b_A_hat_ref, b_A_hat);
-        compare_buffers("gemver x", b_x_ref, b_x);
-        compare_buffers("gemver w", b_w_ref, b_w);
+        compare_buffers_approximately("gemver A_hat", b_A_hat_ref, b_A_hat, 0.001);
+        compare_buffers_approximately("gemver x", b_x_ref, b_x, 0.001);
+        compare_buffers_approximately("gemver w", b_w_ref, b_w, 0.001);
     }
         
 

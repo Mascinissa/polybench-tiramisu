@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_seidel_2d.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "seidel_2d.h"
 #include <tiramisu/utils.h>
 
 
@@ -15,22 +16,6 @@ int i,j,k,t;
 	        A(i, j) = (A(i-1, j-1) + A(i-1, j) + A(i-1, j+1)
 		                + A(i, j-1) + A(i, j) + A(i, j+1)
 		                + A(i+1, j-1) + A(i+1, j) + A(i+1, j+1))/(9.0);  
-  return 0;
-}
-
-int init_array(Halide::Buffer<double> A)
-{
-
-  transpose(A);
-
-  int i, j, k;
-  int n=N;
-  for (i = 0; i < n; i++)
-    for (j = 0; j < n; j++)
-      A(i, j) = ((double) i*(j+2) + 2) / n;
-
-  transpose(A);
-
   return 0;
 }
 

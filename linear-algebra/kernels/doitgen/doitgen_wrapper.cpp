@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_doitgen.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "doitgen.h"
 #include <tiramisu/utils.h>
 
 int doitgen_ref(Halide::Buffer<double> A, Halide::Buffer<double> x)
@@ -50,8 +51,7 @@ int main(int argc, char** argv)
     // REFERENCE
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_A_ref, (double)2);
-            init_buffer(b_x, (double)4);
+            init_array(b_A_ref, b_x);
 
             transpose(b_A_ref);
             transpose(b_x);
@@ -71,8 +71,7 @@ int main(int argc, char** argv)
     // TIRAMISU
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_A, (double)2);
-            init_buffer(b_x, (double)4);
+            init_array(b_A, b_x);
 
             auto start = std::chrono::high_resolution_clock::now();
             if (run_tiramisu)
@@ -88,7 +87,7 @@ int main(int argc, char** argv)
         { median(duration_vector_1), median(duration_vector_2) });
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("doitgen", b_A_ref, b_A);
+        compare_buffers_approximately("doitgen", b_A_ref, b_A, 0.001);
 
     if (PRINT_OUTPUT) {
         std::cout << "Tiramisu " << std::endl;

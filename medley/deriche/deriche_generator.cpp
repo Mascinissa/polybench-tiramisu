@@ -1,5 +1,6 @@
 #include <tiramisu/tiramisu.h>
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "deriche.h"
 
 using namespace tiramisu;
 

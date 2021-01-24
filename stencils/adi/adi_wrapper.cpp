@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_adi.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "adi.h"
 #include <tiramisu/utils.h>
 
 int adi_ref(Halide::Buffer<double> u)
@@ -62,19 +63,6 @@ for (i=0; i<N; i++) {
       }
     }
   }
-  return 0;
-}
-
-int init_array(Halide::Buffer<double> u)
-{
-  int i, j;
-transpose(u);
-  for (i = 0; i < N; i++)
-    for (j = 0; j < N; j++)
-    {
-	    u(i, j) =  (double)(i + N-j) / N;
-    }
-transpose(u);
   return 0;
 }
 

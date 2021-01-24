@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_covariance.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "covariance.h"
 #include <tiramisu/utils.h>
 
 //TODO
@@ -62,9 +63,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_cov_ref, (double) 1);
-	        init_buffer(b_data, (double) 2);
-          b_data(5,2)=52;
+	        init_array(b_data);
           
           transpose(b_data);
           transpose(b_cov_ref);
@@ -85,9 +84,8 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-            init_buffer(b_cov, (double) 1);
-	        init_buffer(b_data, (double) 2);
-            b_data(5,2)=52;
+	        init_array(b_data);
+
             auto start = std::chrono::high_resolution_clock::now();
 
 	        if (run_tiramisu)
@@ -103,7 +101,7 @@ int main(int argc, char** argv)
 	       {median(duration_vector_1), median(duration_vector_2)});
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("covariance", b_cov_ref, b_cov);
+        compare_buffers_approximately("covariance", b_cov_ref, b_cov, 0.0001);
 
     if (PRINT_OUTPUT)
     {

@@ -1,6 +1,6 @@
 #include <tiramisu/tiramisu.h>
-#include "benchmarks.h"
-// #define eps 0.1
+#include "polybench-tiramisu.h"
+#include "3mm.h"
 
 using namespace tiramisu;
 

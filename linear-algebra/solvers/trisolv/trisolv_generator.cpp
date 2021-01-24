@@ -1,5 +1,6 @@
 #include <tiramisu/tiramisu.h>
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "trisolv.h"
 
 using namespace tiramisu;
 

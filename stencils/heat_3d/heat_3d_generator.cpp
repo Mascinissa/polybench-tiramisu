@@ -1,5 +1,6 @@
 #include <tiramisu/tiramisu.h>
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "heat_3d.h"
 
 using namespace tiramisu;
 

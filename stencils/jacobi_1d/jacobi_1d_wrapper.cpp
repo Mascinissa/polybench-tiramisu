@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_jacobi_1d.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "jacobi_1d.h"
 #include <tiramisu/utils.h>
 
 
@@ -19,20 +20,6 @@ int jacobi_1d_ref(Halide::Buffer<double> A, Halide::Buffer<double> B)
   return 0;
 }
 
-int init_array(Halide::Buffer<double> A, Halide::Buffer<double> B)
-{
-
-  int i, j, k;
-  int n = N;
-
-  for (i = 0; i < n; i++)
-    {
-	    A(i)  = ((double) i+ 2) / n;
-	    B(i)  = ((double) i+ 3) / n;
-    }
-
-  return 0;
-}
 
 int main(int argc, char** argv)
 {

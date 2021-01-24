@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_mvt.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "mvt.h"
 #include <tiramisu/utils.h>
 
 int mvt_ref(Halide::Buffer<double> A, Halide::Buffer<double> y1, Halide::Buffer<double> y2, Halide::Buffer<double> x1, Halide::Buffer<double> x2)
@@ -46,11 +47,7 @@ int main(int argc, char** argv)
     // REFERENCE
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_x1_ref, (double)1);
-            init_buffer(b_x2_ref, (double)2);
-            init_buffer(b_A, (double)3);
-            init_buffer(b_y1, (double)4);
-            init_buffer(b_y2, (double)5);
+            init_array(b_A, b_y1, b_y2 ,b_x1_ref, b_x2_ref);
 
             transpose(b_A);
             auto start = std::chrono::high_resolution_clock::now();
@@ -68,11 +65,8 @@ int main(int argc, char** argv)
     // TIRAMISU
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_x1, (double)1);
-            init_buffer(b_x2, (double)2);
-            init_buffer(b_A, (double)3);
-            init_buffer(b_y1, (double)4);
-            init_buffer(b_y2, (double)5);
+            init_array(b_A, b_y1, b_y2 ,b_x1, b_x2);
+
 
             auto start = std::chrono::high_resolution_clock::now();
             if (run_tiramisu)
@@ -88,8 +82,8 @@ int main(int argc, char** argv)
         { median(duration_vector_1), median(duration_vector_2) });
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("mvt x1", b_x1_ref, b_x1);
-        compare_buffers("mvt x2", b_x2_ref, b_x2);
+        compare_buffers_approximately("mvt x1", b_x1_ref, b_x1, 0.0001);
+        compare_buffers_approximately("mvt x2", b_x2_ref, b_x2, 0.0001);
 
     if (PRINT_OUTPUT) {
         std::cout << "Tiramisu " << std::endl;

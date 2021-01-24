@@ -1,5 +1,6 @@
 #include <tiramisu/tiramisu.h>
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "correlation.h"
 // #define eps 0.1
 
 using namespace tiramisu;

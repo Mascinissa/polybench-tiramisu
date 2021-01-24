@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_trmm.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "trmm.h"
 #include <tiramisu/utils.h>
 
 
@@ -45,9 +46,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-	      init_buffer(b_A, (double) 2);
-	      init_buffer(b_B_ref, (double) 3);
-
+	      init_array(b_A, b_B_ref);
 
           transpose(b_B_ref);
           transpose(b_A);
@@ -68,8 +67,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-	      init_buffer(b_A, (double) 2);
-	      init_buffer(b_B, (double) 3);
+	      init_array(b_A, b_B);
 
           auto start = std::chrono::high_resolution_clock::now();
 	        if (run_tiramisu)

@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_trisolv.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "trisolv.h"
 #include <tiramisu/utils.h>
 
 
@@ -17,23 +18,6 @@ int trisolv_ref(Halide::Buffer<double> L, Halide::Buffer<double> b, Halide::Buff
       x(i) = x(i) / L(i, i);
     }
   return 0;
-}
-
-//initializes a positive semi-definite matrix
-int init_array(Halide::Buffer<double> L, Halide::Buffer<double> b, Halide::Buffer<double> x)
-{
-  int i, j;
-  int n = N;
-
-  for (i = 0; i < n; i++)
-    {
-      x(i) = - 999;
-      b(i) =  i ;
-      for (j = 0; j <= i; j++)
-  	    L(i, j) = (double) (i+n-j+1)*2/n;
-    }
-
-return 0;
 }
 
 int main(int argc, char** argv)

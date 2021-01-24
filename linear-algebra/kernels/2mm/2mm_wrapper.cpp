@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_2mm.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "2mm.h"
 #include <tiramisu/utils.h>
 
 
@@ -55,10 +56,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_D_ref, (double) 1);
-	      init_buffer(b_A, (double) 2);
-	      init_buffer(b_B, (double) 3);
-	      init_buffer(b_C, (double) 4);
+	      init_array(b_A, b_B, b_C, b_D_ref);
 
           transpose(b_D_ref);
           transpose(b_A);
@@ -83,10 +81,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_D, (double) 1);
-	      init_buffer(b_A, (double) 2);
-	      init_buffer(b_B, (double) 3);
-	      init_buffer(b_C, (double) 4);
+	      init_array(b_A, b_B, b_C, b_D);
 
    
           auto start = std::chrono::high_resolution_clock::now();
@@ -103,7 +98,7 @@ int main(int argc, char** argv)
 	       {median(duration_vector_1), median(duration_vector_2)});
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("2mm", b_D_ref, b_D);
+        compare_buffers_approximately("2mm", b_D_ref, b_D, 0.0001);
 
     if (PRINT_OUTPUT)
     {

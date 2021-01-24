@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_jacobi_2d.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "jacobi_2d.h"
 #include <tiramisu/utils.h>
 
 
@@ -18,26 +19,6 @@ for (t = 0; t < TSTEPS; t++)
 	    for (j = 1; j < N - 1; j++)
 	      A(i, j) = (0.2) * (B(i, j) + B(i, j-1) + B(i, 1+j) + B(1+i, j) + B(i-1, j));
   }   
-  return 0;
-}
-
-int init_array(Halide::Buffer<double> A, Halide::Buffer<double> B)
-{
-
-  transpose(A);
-  transpose(B);
-  int i, j, k;
-  int n=N;
-
-  for (i = 0; i < n; i++)
-    for (j = 0; j < n; j++)
-      {
-	      A(i, j) = ((double) i*(j+2) + 2) / n;
-	      B(i, j) = ((double) i*(j+3) + 3) / n;
-      }
-
-  transpose(A);
-  transpose(B);
   return 0;
 }
 

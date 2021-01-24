@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_correlation.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "correlation.h"
 #include <tiramisu/utils.h>
 
 
@@ -86,11 +87,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_corr_ref, (double) 1);
-	        // init_buffer(b_data, (double) 2);
-          for (int i = 0; i < M; ++i)  
-            for (int j = 0; j < N; ++j)
-              b_data(j,i)=pow(-1,(j%2))*i+pow(-1,((j+i)%2))*j;
+          init_array(b_data);
           
           transpose(b_data);
           transpose(b_corr_ref);
@@ -111,14 +108,9 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_corr, (double) 1);
-	        // init_buffer(b_data, (double) 2);
-          for (int i = 0; i < M; ++i)  
-            for (int j = 0; j < N; ++j)
-              b_data(j,i)=pow(-1,(j%2))*i+pow(-1,((j+i)%2))*j;
-          
-          auto start = std::chrono::high_resolution_clock::now();
+          init_array(b_data);
 
+          auto start = std::chrono::high_resolution_clock::now();
 	        if (run_tiramisu)
 	    	    correlation(b_data.raw_buffer(), b_corr.raw_buffer());
 

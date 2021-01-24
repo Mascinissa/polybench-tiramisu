@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_deriche.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "deriche.h"
 #include <tiramisu/utils.h>
 
 int deriche_ref(Halide::Buffer<double> imgIn, Halide::Buffer<double> imgOut)
@@ -88,18 +89,6 @@ int deriche_ref(Halide::Buffer<double> imgIn, Halide::Buffer<double> imgOut)
       for (j=0; j<H; j++)
           imgOut(i, j) = c2*(y1(i, j) + y2(i, j));
   return 0;
-}
-
-int init_array(Halide::Buffer<double> imgIn)
-{
-  int i, j;
-  transpose(imgIn);
-  //input should be between 0 and 1 (grayscale image pixel)
-  for (i = 0; i < W; i++)
-     for (j = 0; j < H; j++)
-	imgIn(i, j) = (double) ((313*i+991*j)%65536) / 65535.0f;
-  transpose(imgIn);
-return 0;
 }
 
 int main(int argc, char** argv)

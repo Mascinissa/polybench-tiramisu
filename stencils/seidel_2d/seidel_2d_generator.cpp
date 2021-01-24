@@ -1,5 +1,6 @@
 #include <tiramisu/tiramisu.h>
-#include "benchmarks.h"
+#include "seidel_2d.h"
+#include "polybench-tiramisu.h"
 
 using namespace tiramisu;
 

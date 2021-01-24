@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_atax.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "atax.h"
 #include <tiramisu/utils.h>
 
 int atax_ref(Halide::Buffer<double> A, Halide::Buffer<double> x,
@@ -51,9 +52,7 @@ int main(int argc, char** argv)
     // REFERENCE
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_y_ref, (double)1);
-            init_buffer(b_A, (double)2);
-            init_buffer(b_x, (double)4);
+            init_array(b_A, b_x);
 
             transpose(b_A);
             auto start = std::chrono::high_resolution_clock::now();
@@ -71,9 +70,7 @@ int main(int argc, char** argv)
     // TIRAMISU
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_y, (double)1);
-            init_buffer(b_A, (double)2);
-            init_buffer(b_x, (double)4);
+            init_array(b_A, b_x);
 
             auto start = std::chrono::high_resolution_clock::now();
             if (run_tiramisu)
@@ -89,7 +86,7 @@ int main(int argc, char** argv)
         { median(duration_vector_1), median(duration_vector_2) });
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("atax", b_y_ref, b_y);
+        compare_buffers_approximately("atax", b_y_ref, b_y, 0.0001);
 
     if (PRINT_OUTPUT) {
         std::cout << "Tiramisu " << std::endl;

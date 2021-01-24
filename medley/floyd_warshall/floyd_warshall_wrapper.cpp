@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_floyd_warshall.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "floyd_warshall.h"
 #include <tiramisu/utils.h>
 
 
@@ -16,20 +17,6 @@ int floyd_warshall_ref(Halide::Buffer<double> path)
         for (j = 0; j < N; j++)
             path(i, j) = std::min(path(i, j), path(i, k) + path(k, j));
     }
-  return 0;
-}
-
-int init_array (Halide::Buffer<double> path)
-{
-  int i, j;
-  transpose(path);
-  for (i = 0; i < N; i++)
-    for (j = 0; j < N; j++) {
-      path(i, j) = i*j%7+1;
-      if ((i+j)%13 == 0 || (i+j)%7==0 || (i+j)%11 == 0)
-         path(i, j) = 999;
-    }
-  transpose(path);
   return 0;
 }
 

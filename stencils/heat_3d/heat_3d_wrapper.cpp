@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_heat_3d.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "heat_3d.h"
 #include <tiramisu/utils.h>
 
 
@@ -31,23 +32,6 @@ int heat_3d_ref(Halide::Buffer<double> A, Halide::Buffer<double> B)
           }
       }
   }
-  return 0;
-}
-
-int init_array(Halide::Buffer<double> A, Halide::Buffer<double> B)
-{
-
-  transpose(A);
-  transpose(B);
-  int i, j, k;
-
-  for (i = 0; i < N; i++)
-    for (j = 0; j < N; j++)
-      for (k = 0; k < N; k++)
-        A(i, j, k) = B(i, j, k) = (double) (i + j + (N-k))* 10 / (N);
-
-  transpose(A);
-  transpose(B);
   return 0;
 }
 

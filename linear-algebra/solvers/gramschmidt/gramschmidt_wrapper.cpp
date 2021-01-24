@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_gramschmidt.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "gramschmidt.h"
 #include <tiramisu/utils.h>
 
 
@@ -29,28 +30,6 @@ int gramschmidt_ref(Halide::Buffer<double> A, Halide::Buffer<double> Q, Halide::
   }
 
   return 0;
-}
-
-
-int init_array(Halide::Buffer<double> A, Halide::Buffer<double> Q, Halide::Buffer<double> R)
-{
-    int i, j;
-  transpose(A);
-  transpose(Q);
-  transpose(R);
-  for (i = 0; i < M; i++)
-    for (j = 0; j < N; j++) {
-      A(i, j) = (((double) ((i*j) % M) / M )*100) + 10;
-      Q(i, j) = 0.0;
-    }
-  for (i = 0; i < N; i++)
-    for (j = 0; j < N; j++)
-      R(i, j) = 0.0;
-
-  transpose(A);
-  transpose(Q);
-  transpose(R);
-return 0;
 }
 
 int main(int argc, char** argv)

@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_gesummv.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "gesummv.h"
 #include <tiramisu/utils.h>
 
 
@@ -53,10 +54,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_y_ref, (double) 5);
-	      init_buffer(b_A, (double) 2);
-	      init_buffer(b_B, (double) 3);
-	      init_buffer(b_x, (double) 4);
+	      init_array(b_A, b_B, b_x);
 
           transpose(b_A);
           transpose(b_B);
@@ -77,10 +75,7 @@ int main(int argc, char** argv)
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
-          init_buffer(b_y, (double) 5);
-	      init_buffer(b_A, (double) 2);
-	      init_buffer(b_B, (double) 3);
-	      init_buffer(b_x, (double) 4);
+	      init_array(b_A, b_B, b_x);
 
           auto start = std::chrono::high_resolution_clock::now();
 	      if (run_tiramisu)
@@ -96,7 +91,7 @@ int main(int argc, char** argv)
 	       {median(duration_vector_1), median(duration_vector_2)});
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("gesummv", b_y_ref, b_y);
+        compare_buffers_approximately("gesummv", b_y_ref, b_y, 0.0001);
 
     if (PRINT_OUTPUT)
     {

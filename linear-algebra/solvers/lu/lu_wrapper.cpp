@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_lu.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "lu.h"
 #include <tiramisu/utils.h>
 
 
@@ -23,39 +24,6 @@ int lu_ref(Halide::Buffer<double> A)
     }
   }
   return 0;
-}
-
-//initializes a positive semi-definite matrix
-int init_array(Halide::Buffer<double> A)
-{
-  int i, j;
-  int n = N;
-
-  for (i = 0; i < n; i++)
-    {
-      for (j = 0; j <= i; j++)
-	A(i, j) = (double)(-j % n) / n + 1;
-      for (j = i+1; j < n; j++) {
-	A(i, j) = 0;
-      }
-      A(i, i) = 1;
-    }
-
-  /* Make the matrix positive semi-definite. */
-  int r,s,t;
-  Halide::Buffer<double> B(N,N);
-  for (r = 0; r < n; ++r)
-    for (s = 0; s < n; ++s)
-      B(r, s) = 0;
-  for (t = 0; t < n; ++t)
-    for (r = 0; r < n; ++r)
-      for (s = 0; s < n; ++s)
-	B(r, s) += A(r, t) * A(s, t);
-    for (r = 0; r < n; ++r)
-      for (s = 0; s < n; ++s)
-	A(r, s) = B(r, s);
-
-return 0;
 }
 
 int main(int argc, char** argv)

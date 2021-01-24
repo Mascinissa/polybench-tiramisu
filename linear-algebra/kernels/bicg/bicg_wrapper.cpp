@@ -2,7 +2,8 @@
 #include <tiramisu/tiramisu.h>
 #include <iostream>
 #include "generated_bicg.o.h"
-#include "benchmarks.h"
+#include "polybench-tiramisu.h"
+#include "bicg.h"
 #include <tiramisu/utils.h>
 
 int bicg_ref(Halide::Buffer<double> A, Halide::Buffer<double> p, Halide::Buffer<double> r, Halide::Buffer<double> q, Halide::Buffer<double> s)
@@ -49,11 +50,7 @@ int main(int argc, char** argv)
     // REFERENCE
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_q_ref, (double)1);
-            init_buffer(b_s_ref, (double)2);
-            init_buffer(b_A, (double)3);
-            init_buffer(b_p, (double)4);
-            init_buffer(b_r, (double)5);
+            init_array(b_A, b_p, b_r);
 
             transpose(b_A);
             auto start = std::chrono::high_resolution_clock::now();
@@ -71,11 +68,7 @@ int main(int argc, char** argv)
     // TIRAMISU
     {
         for (int i = 0; i < NB_TESTS; ++i) {
-            init_buffer(b_q, (double)1);
-            init_buffer(b_s, (double)2);
-            init_buffer(b_A, (double)3);
-            init_buffer(b_p, (double)4);
-            init_buffer(b_r, (double)5);
+            init_array(b_A, b_p, b_r);
 
             auto start = std::chrono::high_resolution_clock::now();
             if (run_tiramisu)
@@ -91,8 +84,8 @@ int main(int argc, char** argv)
         { median(duration_vector_1), median(duration_vector_2) });
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("bicg q", b_q_ref, b_q);
-        compare_buffers("bicg s", b_s_ref, b_s);
+        compare_buffers_approximately("bicg q", b_q_ref, b_q, 0.0001);
+        compare_buffers_approximately("bicg s", b_s_ref, b_s, 0.0001);
 
     if (PRINT_OUTPUT) {
         std::cout << "Tiramisu " << std::endl;
