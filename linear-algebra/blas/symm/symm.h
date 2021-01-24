@@ -3,8 +3,8 @@
 // Problem size
 #if TIRAMISU_MINI
 
-#define M 20
-#define N 30
+#define M 5
+#define N 6
 
 #elif TIRAMISU_SMALL
 

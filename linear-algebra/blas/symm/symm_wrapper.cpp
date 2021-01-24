@@ -9,7 +9,8 @@
 
 int symm_ref(Halide::Buffer<double> A, Halide::Buffer<double> B, Halide::Buffer<double> C)
 {
-  int i,j,k,temp2;
+  int i,j,k;
+  double temp2;
   for (i = 0; i < M; i++)
     for (j = 0; j < N; j++) {
         temp2 = 0;
@@ -68,7 +69,7 @@ int main(int argc, char** argv)
         }
     }
 
-    //TIRAMISU
+    // TIRAMISU
     {
         for (int i = 0; i < NB_TESTS; ++i)
         {
