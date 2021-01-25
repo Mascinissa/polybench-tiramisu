@@ -28,7 +28,7 @@
 
 #endif 
 
-
+#define eps 0.000001
 
 int init_array(Halide::Buffer<double> A, Halide::Buffer<double> Q, Halide::Buffer<double> R)
 {
