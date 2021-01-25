@@ -29,6 +29,8 @@
 
 #endif 
 
+#define eps 0.1
+
 int init_array(Halide::Buffer<double> data)
 {
   int i, j;

@@ -32,7 +32,7 @@ int correlation_ref(Halide::Buffer<double> data, Halide::Buffer<double> corr)
       /* The following in an inelegant but usual way to handle
          near-zero std. dev. values, which below would cause a zero-
          divide. */
-      // stddev(j) = stddev(j) <= eps ? (1.0) : stddev(j);
+      stddev(j) = stddev(j) <= eps ? (1.0) : stddev(j);
     }
 
   /* Center and reduce the column vectors. */

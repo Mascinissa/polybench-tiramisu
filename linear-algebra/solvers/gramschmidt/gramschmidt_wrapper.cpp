@@ -10,10 +10,10 @@
 int gramschmidt_ref(Halide::Buffer<double> A, Halide::Buffer<double> Q, Halide::Buffer<double> R)
 {
   int i,j,k;
-  float nrm;
+  double nrm;
   for (k = 0; k < N; k++)
   {
-    nrm = 0.0;
+    nrm = eps;
     for (i = 0; i < M; i++)
       nrm += A(i, k) * A(i, k);
     R(k, k) = sqrt(nrm);
@@ -60,14 +60,14 @@ int main(int argc, char** argv)
         for (int i = 0; i < NB_TESTS; ++i)
         {
 	      
-          init_array(b_A_ref,b_Q_ref,b_R_ref);
+          init_array(b_A_ref, b_Q_ref, b_R_ref);
           transpose(b_A_ref);
           transpose(b_Q_ref);
           transpose(b_R_ref);
           auto start = std::chrono::high_resolution_clock::now();
 
 	        if (run_ref)
-	    	    gramschmidt_ref(b_A_ref,b_Q_ref,b_R_ref);
+	    	    gramschmidt_ref(b_A_ref, b_Q_ref, b_R_ref);
 
 	        auto end = std::chrono::high_resolution_clock::now();
           transpose(b_A_ref);
@@ -98,9 +98,9 @@ int main(int argc, char** argv)
 	       {median(duration_vector_1), median(duration_vector_2)});
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers_approximately("gramschmidt A", b_A_ref, b_A, 0.001);
-        compare_buffers_approximately("gramschmidt R", b_R_ref, b_R, 0.001);
-        compare_buffers_approximately("gramschmidt Q", b_Q_ref, b_Q, 0.001);
+        compare_buffers_approximately("gramschmidt A", b_A_ref, b_A, 0.0001);
+        compare_buffers_approximately("gramschmidt R", b_R_ref, b_R, 0.0001);
+        compare_buffers_approximately("gramschmidt Q", b_Q_ref, b_Q, 0.0001);
 
     if (PRINT_OUTPUT)
     {

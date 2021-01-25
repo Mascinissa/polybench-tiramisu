@@ -1,12 +1,16 @@
 #include <tiramisu/tiramisu.h>
 #include "polybench-tiramisu.h"
 #include "correlation.h"
-// #define eps 0.1
 
 using namespace tiramisu;
 
 /*
-   TODO description
+ Correlation computes the correlation coeffcients (Pearson’s), which is normalized covariance.
+It takes the following as input,
+   •data:NxM matrix that representsNdata points, each with M attributes,
+and gives the following as output:
+   •corr:MxM matrix where the i, j-th element is the correlation coeffcient between i and j.The matrix is symmetric.
+
 */
 
 int main(int argc, char **argv)
@@ -39,9 +43,9 @@ int main(int argc, char **argv)
     computation variance("variance", {k, i}, p_float64);
     variance.set_expression(variance(k, i) + (data(k,i) - mean(0,i))*(data(k,i) - mean(0,i))/expr(cast(p_float64, N)));
     computation std("std", {i}, expr(o_sqrt, variance(0, i)));
-    // computation std("std", {i}, expr(o_max, eps, expr(o_sqrt, variance(0, i))));
+    computation std_thr("std_thr", {i}, (std(i)<=eps)*1.0+(1-(std(i)<=eps))*std(i));
 
-    computation corr("corr", {i, j}, cov(i,j,0)/(std(i)*std(j)));
+    computation corr("corr", {i, j}, cov(i,j,0)/(std_thr(i)*std_thr(j)));
 
     // -------------------------------------------------------
     // Layer II
@@ -52,6 +56,7 @@ int main(int argc, char **argv)
              .then(variance_init, computation::root)
              .then(variance, computation::root)
              .then(std, computation::root)
+             .then(std_thr, computation::root)
              .then(corr, computation::root);
 
     // -------------------------------------------------------
@@ -75,6 +80,7 @@ int main(int argc, char **argv)
     variance_init.store_in(&b_std);
     variance.store_in(&b_std, {i});
     std.store_in(&b_std);
+    std_thr.store_in(&b_std);
     cov_init.store_in(&b_cov);
     cov.store_in(&b_cov, {i,j});
     corr.store_in(&b_corr);
