@@ -5,7 +5,11 @@
 using namespace tiramisu;
 
 /*
-   TODO          
+Computes the covariance, a measure from statistics that show how linearly related two variables are.
+It takes the following as input,
+    •data:NxMmatrix that representsNdata points, each with M attributes,
+and gives the following as output:
+    •cov:MxMmatrix where the i, j-th element is the covariance between i and j.  The matrix issymmetric.          
 */
 
 int main(int argc, char **argv)

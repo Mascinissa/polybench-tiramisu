@@ -6,7 +6,6 @@
 #include "covariance.h"
 #include <tiramisu/utils.h>
 
-//TODO
 int covariance_ref(Halide::Buffer<double> data, Halide::Buffer<double> cov)
 {
     Halide::Buffer<double> mean(M);
@@ -29,7 +28,7 @@ int covariance_ref(Halide::Buffer<double> data, Halide::Buffer<double> cov)
       {
         cov(i, j) = 0.0;
         for (k = 0; k < N; k++)
-	  cov(i, j) += data(k, i) * data(k, j);
+	        cov(i, j) += data(k, i) * data(k, j);
         cov(i, j) /= (N - 1.0);
         cov(j, i) = cov(i, j);
       }
