@@ -5,7 +5,12 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Cholesky decomposition, which decomposes a matrix to triangular matrices. 
+Only applicable when the input matrix is positive-definite.
+It takes the following as input,
+    • A: NxN positive-definite matrix
+and gives the following as output:
+    • L: NxN lower triangular matrix such that A = LL^T
 */
 
 int main(int argc, char **argv)

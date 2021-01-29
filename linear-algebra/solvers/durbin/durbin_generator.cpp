@@ -5,7 +5,12 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Durbing is an algorithm for solving Yule-Walker equations, which is a special case of Toelitz systems.
+It takes the following as input,
+   • r: vector of length N.
+and gives the following as output:
+   • y: vector of length N
+such that Ty = -r where T is a symmetric, unit-diagonal, Toeplitz matrix defined by the vector [1, r_0, ..., r_(N-1)].
 */
 
 int main(int argc, char **argv)
@@ -21,16 +26,12 @@ int main(int argc, char **argv)
     var i("i", 0, N), j("j", 0, N), k("k", 1, N);
     var d("d",0, 1);
     
-
     //inputs
     input r("r", {i}, p_float64);
     input y("y", {i}, p_float64);
     input alpha("alpha", {}, p_float64);
     input beta("beta", {}, p_float64);
 
-    // y(0) = -r(0);
-    // beta(0) = (9999.0);
-    // alpha(0) = -r(0);
     computation y_0("y_0", {d}, -r(0));
     computation beta_0("beta_0", {d}, 1.0);
     computation alpha_0("alpha_0", {d}, -r(0));
@@ -88,13 +89,6 @@ int main(int argc, char **argv)
     z.store_in(&b_z, {i});
     y_1.store_in(&b_y, {i});
     y_2.store_in(&b_y, {k});
-
-
-    // table_1.set_access("[NN]->{table_1[i,j]->b_table[NN-1-i,j]}");
-    // table_2.set_access("[NN]->{table_2[i,j]->b_table[NN-1-i,j]}");
-    // table_3.set_access("[NN]->{table_3[i,j]->b_table[NN-1-i,j]}");
-    // table_4.set_access("[NN]->{table_4[i,j]->b_table[NN-1-i,j]}");
-    // table_5.set_access("[NN]->{table_5[i,j,k]->b_table[NN-1-i,j]}");
 
     // -------------------------------------------------------
     // Code Generation

@@ -5,7 +5,7 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Heat Equation over 3D space. 
 */
 
 int main(int argc, char **argv)

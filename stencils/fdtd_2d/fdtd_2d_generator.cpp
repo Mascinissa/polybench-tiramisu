@@ -5,7 +5,10 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Simplified Finite-Difference Time-Domain method for 2D data models electric and magnetic fields
+based on Maxwell’s equations. In particular, the polarization used here is T Ez; Transverse Electric in z
+direction. It is a stencil involving three variables, Ex, Ey, and Hz. Ex and Ey are electric fields varying in x
+and y axes, where Hz is the magnetic field along z axis.
 */
 
 int main(int argc, char **argv)

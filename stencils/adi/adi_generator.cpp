@@ -5,7 +5,7 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+ADI Alternating Direction Implicit method for 2D heat diffusion. ADI decomposes a 2D problem to two 1D problems.
 */
 
 int main(int argc, char **argv)

@@ -5,7 +5,8 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Jacobi-style stencil computation over 2D data with 5-point stencil pattern. The computation is simplified
+as simply taking the average of five points.
 */
 
 int main(int argc, char **argv)

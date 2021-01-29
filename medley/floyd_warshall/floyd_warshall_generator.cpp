@@ -6,7 +6,12 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Floyd-Warshall computes the shortest paths between each pair of nodes in a graph.
+It takes the following as input,
+    • paths: NxN matrix, where the i, jth entry represents the cost of taking an edge from i to j. Set to infinity
+if there is no edge connecting i to j.
+and gives the following as output:
+    • paths: NxN matrix, where the i, jth entry represents the shortest path length from i to j
 */
 
 int main(int argc, char **argv)

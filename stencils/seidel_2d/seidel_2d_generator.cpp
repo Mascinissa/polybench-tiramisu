@@ -5,7 +5,7 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Gauss-Seidel style stencil computation over 2D data with 9-point stencil pattern.
 */
 
 int main(int argc, char **argv)

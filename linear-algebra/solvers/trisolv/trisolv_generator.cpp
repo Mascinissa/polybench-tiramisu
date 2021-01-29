@@ -5,7 +5,12 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Triangular matrix solver using forward substitution.
+It takes the following as inputs,
+    • L: NxN lower triangular matrix
+    • b: vector of length N
+and gives the following as output:
+    • x: vector of length N, where Lx = b
 */
 
 int main(int argc, char **argv)

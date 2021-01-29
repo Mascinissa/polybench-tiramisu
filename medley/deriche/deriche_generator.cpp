@@ -5,7 +5,23 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+deriche implements the Deriche recursive filter, which is a generic filter that can be used for both edge
+detection and smoothing.
+It takes the following as input,
+    • x: WxH image.
+    • alpha: A parameter of the filter that is related to the size of the convolution.
+    • a1,...,a8, b1, b2, c1, c2: Coeffcients of the filter that determine the behavior of the filter.
+and gives the following as output:
+    • y: The processed image. How the image is processed depends on the coe!cients used.
+The generic 2D implementation is as follows:
+Horizontal Pass
+    y1(i, j) = a1x(i, j) + a2x(i, j " 1) + b1y1(i, j " 1) + b2y1(i, j " 2)
+    y2(i, j) = a3x(i, j + 1) + a4x(i, j + 2) + b1y2(i, j + 1) + b2y2(i, j + 2)
+    r(i, j) = c1 (y1(i, j) + y2(i, j))
+Vertical Pass
+    z1(i, j) = a5r(i, j) + a6r(i " 1, j) + b1y1(i " 1, j) + b2y1(i " 2, j)
+    z2(i, j) = a7r(i + 1, j) + a8r(i + 2, j) + b1y1(i + 1, j) + b2y1(i + 2, j)
+    y(i, j) = c2 (z1(i, j) + z2(i, j))
 */
 
 int main(int argc, char **argv)

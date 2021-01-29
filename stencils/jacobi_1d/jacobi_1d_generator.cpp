@@ -5,7 +5,7 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Jacobi style stencil computation over 1D data with 3-point stencil pattern. 
 */
 
 int main(int argc, char **argv)

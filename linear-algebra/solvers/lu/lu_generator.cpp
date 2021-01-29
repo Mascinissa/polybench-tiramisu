@@ -5,7 +5,13 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+LU decomposition without pivoting.
+It takes the following as input,
+    • A: NxN matrix
+and gives the following as outputs:
+    • L: NxN lower triangular matrix
+    • U: NxN upper triangular matrix
+such that A = LU.
 */
 
 int main(int argc, char **argv)

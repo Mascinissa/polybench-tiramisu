@@ -5,7 +5,13 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+QR Decomposition with Modified Gram Schmidt.
+It takes the following as input,
+    • A: MxN rank N matrix (M>N).
+and gives the following as outputs:
+    • Q: MxN orthogonal matrix
+    • R: NxN upper triangular matrix
+such that A = QR.
 */
 
 int main(int argc, char **argv)

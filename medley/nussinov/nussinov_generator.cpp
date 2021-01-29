@@ -5,7 +5,11 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Nussinov is an algorithm for predicting RNA folding, and is an instance of dynamic programming.
+It takes the following as input,
+    • seq: RNA sequence of length N. The valid entries are one of ‘A’ ‘G’ ‘C’ ‘T’. (or ‘U’ in place of ‘T’).
+and gives the following as output:
+    • table: NxN triangular matrix, which is the dynamic programming table.
 */
 
 int main(int argc, char **argv)

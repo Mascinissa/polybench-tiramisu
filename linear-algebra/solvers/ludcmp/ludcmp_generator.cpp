@@ -5,7 +5,15 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+This kernel solves a system of linear equations using LU decomposition followed by forward and backward
+substitutions.
+It takes the following as inputs,
+    • A: NxN matrix
+    • b: vector of length N
+and gives the following as output:
+    • x: vector of length N, where Ax = b
+The matrix A is first decomposed into L and U using the same algorithm as in lu. Then the two
+triangular systems are solved to find x.
 */
 
 int main(int argc, char **argv)
