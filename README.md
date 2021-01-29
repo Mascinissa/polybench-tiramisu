@@ -58,8 +58,8 @@ Example:
 
 ##	 References
 
- - Pouchet, Louis-Noël. "Polybench: The polyhedral benchmark suite,
-   2012." URL: [http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/](http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/)  (2012).
-  - Yuki, Tomofumi, and Louis-Noël Pouchet. "Polybench 4.0." (2015).
+ - Pouchet, Louis-Noël. "Polybench: The polyhedral benchmark suite, 2012." URL: [http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/](http://web.cse.ohio-state.edu/~pouchet.2/software/polybench/)  (2012).
+ 
+ - Yuki, Tomofumi, and Louis-Noël Pouchet. "Polybench 4.2.1" (2016). URL: [https://github.com/MatthiasJReisinger/PolyBenchC-4.2.1/blob/master/polybench.pdf](https://github.com/MatthiasJReisinger/PolyBenchC-4.2.1/blob/master/polybench.pdf)
    
 - Baghdadi, Riyadh, et al. "Tiramisu: A polyhedral compiler for expressing fast and portable code." _2019 IEEE/ACM International Symposium on Code Generation and Optimization (CGO)_. IEEE, 2019.
