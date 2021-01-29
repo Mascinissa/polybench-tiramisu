@@ -6,7 +6,14 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Generalized Matrix Multiply from BLAS.
+It takes the following as inputs,
+    • alpha, beta: scalars
+    • A: PxQ matrix
+    • B: QxR matrix
+    • C: PxR matrix
+and gives the following as output:
+    • Cout: PxR array, where Cout = alpha*AB + beta*C
 */
 
 int main(int argc, char **argv)

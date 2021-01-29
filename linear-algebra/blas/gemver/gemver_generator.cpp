@@ -5,7 +5,15 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Multiple matrix-vector multiplication.
+It takes the following as inputs,
+    • alpha, beta: scalars
+    • A: NxN matrix
+    • u1, u2, v1, v2, y, z: vectors of length N
+and gives the following as outputs:
+    • A’: NxN matrix, where A' = A + u1.v1 + u2.v2
+    • x: vector of length N, where x = beta*A'*y + z
+    • w: vector of length N, where w = alpha*A'*x
 */
 
 int main(int argc, char **argv)

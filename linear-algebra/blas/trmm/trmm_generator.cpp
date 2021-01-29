@@ -5,7 +5,12 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Triangular matrix multiplication.
+It takes the following as inputs,
+    • A: NxN lower triangular matrix
+    • B: NxN matrix
+and gives the following as output:
+    • Bout: NxN matrix, where Bout = AB
 */
 
 int main(int argc, char **argv)

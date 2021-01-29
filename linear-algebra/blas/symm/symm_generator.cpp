@@ -5,7 +5,16 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+   The symm benchmark has a known code generation issue (358aeab). Edit the compilation script to run it anyway.
+*/
+/*
+Symmetric matrix matrix multiplication from BLAS.
+It takes the following as inputs,
+    • alpha, beta: scalars
+    • A: M x M symmetric matrix
+    • B,C: M x N matrices
+and gives the following as output:
+    • Cout: M x N matrix, where Cout = alpha*AB + beta
 */
 
 int main(int argc, char **argv)

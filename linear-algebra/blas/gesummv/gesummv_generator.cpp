@@ -6,7 +6,13 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Summed matrix-vector multiplications.
+It takes the following as inputs,
+    • alpha, beta: scalars
+    • A, B: N x N matrix
+    • x: vector of length N
+and gives the following as outputs:
+    • y: vector of length N, where y = alpha*Ax + beta*Bx
 */
 
 int main(int argc, char **argv)

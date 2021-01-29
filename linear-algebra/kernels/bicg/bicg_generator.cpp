@@ -6,7 +6,14 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Kernel of BiCGSTAB (BiConjugate Gradient STABilized method).
+It takes the following as inputs,
+  • A: NxM matrix
+  • p: vector of length M
+  • r: vector of length N
+and gives the following as output:
+  • q: vector of length N, where q = A*p
+  • s: vector of length M, where s = A^T*r
 */
 
 int main(int argc, char **argv) {

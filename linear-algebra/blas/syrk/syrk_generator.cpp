@@ -5,7 +5,13 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Symmetric rank k update.
+It takes the following as inputs,
+    • alpha, beta: scalars
+    • A: NxM matrix
+    • C: NxN symmetric matrix
+and gives the following as output:
+    • Cout: NxN matrix, where Cout = alpha*AAT + beta*C
 */
 
 int main(int argc, char **argv)

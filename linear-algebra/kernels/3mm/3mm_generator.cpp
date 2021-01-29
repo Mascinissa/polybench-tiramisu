@@ -5,7 +5,14 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+Linear algebra kernel that consists of three matrix multiplications.
+It takes the following as inputs,
+    • A: PxQ matrix
+    • B: QxR matrix
+    • C: RxS matrix
+    • D: SxT matrix
+and gives the following as output:
+    • G: PxT matrix, where G = (A.B).(C.D)
 */
 
 int main(int argc, char **argv)
