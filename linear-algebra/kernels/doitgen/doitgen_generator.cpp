@@ -5,7 +5,11 @@
 using namespace tiramisu;
 
 /*
-   TODO description
+It takes the following as inputs,
+  •A:R×Q×S array
+  •x:P×S array
+and gives the following as output:
+  •Aout:R×Q×P array A(r,q,p) =∑_s A(r,q,s)x(p,s)
 */
 
 int main(int argc, char **argv) {
