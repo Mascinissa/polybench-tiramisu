@@ -19,7 +19,7 @@
 #elif TIRAMISU_LARGE
 
 #define TSTEPS 500 
-#define N 200
+#define N 2000
 
 
 #elif TIRAMISU_XLARGE
