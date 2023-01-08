@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     computation ym1_w_init("ym1_w_init", {i}, 0.0);
     computation ym2_w_init("ym2_w_init", {i}, 0.0);
     computation xm1_w_init("xm1_w_init", {i}, 0.0);
-    computation y1_1("y1", {i,j}, imgIn(i, j)*a1 + xm1_w_init(i)*a2 + ym1_w_init(i)*b1 + ym2_w_init(i)*b2);
+    computation y1_1("y1_1", {i,j}, imgIn(i, j)*a1 + xm1_w_init(i)*a2 + ym1_w_init(i)*b1 + ym2_w_init(i)*b2);
     computation xm1_w("xm1_w", {i,j}, imgIn(i, j));
     computation ym2_w("ym2_w", {i,j}, ym1_w_init(i));
     computation ym1_w("ym1_w", {i,j}, y1(i, j));
