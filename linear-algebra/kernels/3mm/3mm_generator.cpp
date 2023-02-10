@@ -50,11 +50,11 @@ int main(int argc, char **argv)
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
-    AB_init.then(AB, computation::root)
+    AB_init.then(AB, l)
            .then(CD_init, computation::root)
-           .then(CD, computation::root)
+           .then(CD, m)
            .then(E_init, computation::root)
-           .then(E, computation::root);
+           .then(E, m;
 
     // -------------------------------------------------------
     // Layer III

@@ -42,9 +42,9 @@ int main(int argc, char **argv) {
   // -------------------------------------------------------
   // Layer II
   // -------------------------------------------------------
-  q_init.then(q, computation::root)
-        .then(s_init, computation::root)
-        .then(s, computation::root);
+  s_init.then(q_init, computation::root)
+        .then(s, i)
+        .then(q, j);
 
   // -------------------------------------------------------
   // Layer III

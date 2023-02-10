@@ -37,13 +37,13 @@ int main(int argc, char **argv)
     //Computations
     
     computation C_init("C_init", {i,j}, C(i,j)*beta);
-    computation C_out("C_out", {i,j,k}, p_float64);
-    C_out.set_expression(C_out(i,j,k)+A(i,k)*B(k,j)*alpha);
+    computation C_out("C_out", {i,k,j}, p_float64);
+    C_out.set_expression(C(i,j)+A(i,k)*B(k,j)*alpha);
     
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
-    C_init.then(C_out, computation::root);
+    C_init.then(C_out, i);
 
     // -------------------------------------------------------
     // Layer III

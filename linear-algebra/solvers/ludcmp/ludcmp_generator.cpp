@@ -26,43 +26,73 @@ int main(int argc, char **argv)
     constant NN("NN", N);
 
     //Iteration variables    
-    var i("i", 0, N), j("j"), k("k"), l("l"), m("m"), n("n");
+    var i("i", 0, N), j("j"), k("k"), l("l"), m("m"), n("n"), i_rev("i_rev");
     
 
     //inputs
     input A("A", {i, i}, p_float64);
     input b("b", {i}, p_float64);
+    input w("w", {}, p_float64);
+    input y("y", {i}, p_float64);
+    input x("x", {i}, p_float64);
 
 
     //Computations
-    computation A_sub("[NN]->{A_sub[i,j,k]: 0<=i<NN and 0<=j<i and 0<=k<j}", expr(), true, p_float64, global::get_implicit_function());
-    A_sub.set_expression(A_sub(i,j,k) - A(i,k)*A(k,j));
-    computation A_div("[NN]->{A_div[i,j]: 0<=i<NN and 0<=j<i}", expr(), true, p_float64, global::get_implicit_function());
-    A_div.set_expression(A_sub(i,j,0)/A_sub(j,j,0));
-    computation A_lu("[NN]->{A_lu[i,l,m]: 0<=i<NN and i<=l<NN and 0<=m<i}", expr(), true, p_float64, global::get_implicit_function());
-    A_lu.set_expression(A_lu(i,l,m) - A_div(i,m)*A_div(m,l));
+    computation w_init("[NN]->{w_init[i,j]: 0<=i<NN and 0<=j<i}", expr(), true, p_float64, global::get_implicit_function());
+    w_init.set_expression(A(i,j));
 
-    computation y_init("y_init", {i}, b(i));
-    computation y_temp("[NN]->{y_temp[i,j]: 0<=i<NN and 0<=j<i}", expr(), true, p_float64, global::get_implicit_function());
-    y_temp.set_expression(y_temp(i,j) - A_lu(i, j, 0) * y_init(j));
-    computation x_init("x_init", {i}, 0.0);
-    computation y("[NN]->{y[i,n]: 0<=i<NN and NN-i<=n<NN}", expr(), true, p_float64, global::get_implicit_function());
-    y.set_expression(y(i,n) - A(N-1-i, n) * x_init(n));
-    computation x("[NN]->{x[i]: 0<=i<NN}", expr(), true, p_float64, global::get_implicit_function());
-    x.set_expression(y(i,0) / A(N-1-i, N-1-i));
-    
+    computation w_sub("[NN]->{w_sub[i,j,k]: 0<=i<NN and 0<=j<i and 0<=k<j}", expr(), true, p_float64, global::get_implicit_function());
+    w_sub.set_expression(w(0) - A(i,k)*A(k,j));
+
+    computation A_div("[NN]->{A_div[i,j]: 0<=i<NN and 0<=j<i}", expr(), true, p_float64, global::get_implicit_function());
+    A_div.set_expression(w(0)/A(j,j));
+
+    computation w_init2("[NN]->{w_init2[i,j]: 0<=i<NN and i<=j<NN}", expr(), true, p_float64, global::get_implicit_function());
+    w_init2.set_expression(A(i,j));
+
+    computation w_sub2("[NN]->{w_sub2[i,j,k]: 0<=i<NN and i<=j<NN and 0<=k<i}", expr(), true, p_float64, global::get_implicit_function());
+    w_sub2.set_expression(w(0) - A(i,k)*A(k,j));
+
+    computation A_cpy("[NN]->{A_cpy[i,j]: 0<=i<NN and i<=j<NN}", expr(), true, p_float64, global::get_implicit_function());
+    A_cpy.set_expression(w(0));
+
+    computation w_init3("[NN]->{w_init3[i]: 0<=i<NN}", expr(), true, p_float64, global::get_implicit_function());
+    w_init3.set_expression(b(i));
+
+    computation w_sub3("[NN]->{w_sub3[i,j]: 0<=i<NN and 0<=j<i}", expr(), true, p_float64, global::get_implicit_function());
+    w_sub3.set_expression(w(0) - A(i,j)*y(j));
+
+    computation y_init("[NN]->{y_init[i]: 0<=i<NN}", expr(), true, p_float64, global::get_implicit_function());
+    y_init.set_expression(w(0));
+
+    computation w_init4("[NN]->{w_init4[i]: 0<=i<NN}", expr(), true, p_float64, global::get_implicit_function());
+    w_init4.set_expression(y(i));
+
+    computation w_sub4("[NN]->{w_sub4[i,j]: 0<=i<NN and i+1<=j<NN }", expr(), true, p_float64, global::get_implicit_function());
+    w_sub4.set_expression(w(0) - A(i,j)*x(j));
+
+    computation x_comp("[NN]->{x_comp[i]: 0<=i<NN}", expr(), true, p_float64, global::get_implicit_function());
+    x_comp.set_expression(w(0)/A(i,i));
 
     
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
-    A_sub.then(A_div,j)
-         .then(A_lu, i)
-         .then(y_init,computation::root)
-         .then(y_temp,i)
-         .then(x_init,computation::root)
-         .then(y,computation::root)
-         .then(x,i);
+    w_init4.loop_reversal(i, i_rev);
+    w_sub4.loop_reversal(i, i_rev);
+    x_comp.loop_reversal(i, i_rev);
+
+    w_init.then(w_sub, j)
+          .then(A_div, j)
+          .then(w_init2, i)
+          .then(w_sub2, j)
+          .then(A_cpy, j)
+          .then(w_init3, computation::root)
+          .then(w_sub3, i)
+          .then(y_init, i)
+          .then(w_init4, computation::root)
+          .then(w_sub4, i_rev)
+          .then(x_comp, i_rev);
 
     // -------------------------------------------------------
     // Layer III
@@ -70,23 +100,32 @@ int main(int argc, char **argv)
     //Input Buffers
     buffer b_A("b_A", {N,N}, p_float64, a_output);    
     buffer b_b("b_b", {N}, p_float64, a_input);    
-    buffer b_y("b_y", {N}, p_float64, a_output);    
-    buffer b_x("b_x", {N}, p_float64, a_output);    
+    buffer b_y("b_y", {N}, p_float64, a_output);
+    buffer b_x("b_x", {N}, p_float64, a_output);
+    buffer b_w("b_w", {1}, p_float64, a_temporary);
 
     //Store inputs
     A.store_in(&b_A);    
-    b.store_in(&b_b);    
+    b.store_in(&b_b);
+    w.store_in(&b_w);
+    y.store_in(&b_y);
+    x.store_in(&b_x);
 
     //Store computations
-    A_sub.store_in(&b_A, {i,j});
+    w_init.store_in(&b_w, {});
+    w_init2.store_in(&b_w, {});
+    w_init3.store_in(&b_w, {});
+    w_init4.store_in(&b_w, {});
+    w_sub.store_in(&b_w, {});
+    w_sub2.store_in(&b_w, {});
+    w_sub3.store_in(&b_w, {});
+    w_sub4.store_in(&b_w, {});
     A_div.store_in(&b_A);
-    A_lu.store_in(&b_A, {i,l});
+    A_cpy.store_in(&b_A);
 
     y_init.store_in(&b_y);
-    y_temp.store_in(&b_y, {i});
-    x_init.store_in(&b_x);
-    y.set_access("[NN]->{y[i,n]->b_y[NN-1-i]}");
-    x.set_access("[NN]->{x[i]->b_x[NN-1-i]}");
+    x_comp.store_in(&b_x);
+
 
 
     // -------------------------------------------------------

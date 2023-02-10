@@ -32,13 +32,13 @@ int main(int argc, char **argv)
 
     //Computations
     computation A_sub("[NN]->{A_sub[i,j,k]: 0<=i<NN and 0<=j<i and 0<=k<j}", expr(), true, p_float64, global::get_implicit_function());
-    A_sub.set_expression(A_sub(i,j,k) - A(i,k)*A(j,k));
+    A_sub.set_expression(A(i,j) - A(i,k)*A(j,k));
     computation A_div("[NN]->{A_div[i,j]: 0<=i<NN and 0<=j<i}", expr(), true, p_float64, global::get_implicit_function());
-    A_div.set_expression(A_sub(i,j,0)/A_sub(j,j,0));
-    computation A_diag("[NN]->{A_diag[i,l,m]: 0<=i<NN and l=i and 0<=m<i}", expr(), true, p_float64, global::get_implicit_function());
-    A_diag.set_expression(A_diag(i,l,m) - A_div(i,m)*A_div(i,m));
-    computation A_out("[NN]->{A_out[i,l]: 0<=i<NN and l=i}", expr(), true, p_float64, global::get_implicit_function());
-    A_out.set_expression(expr(o_sqrt, A_diag(i,l,0)));
+    A_div.set_expression(A(i,j)/A(j,j));
+    computation A_diag("[NN]->{A_diag[i,k]: 0<=i<NN and 0<=k<i}", expr(), true, p_float64, global::get_implicit_function());
+    A_diag.set_expression(A(i,i) - A(i,k)*A(i,k));
+    computation A_out("[NN]->{A_out[i]: 0<=i<NN}", expr(), true, p_float64, global::get_implicit_function());
+    A_out.set_expression(expr(o_sqrt, A(i,i)));
 
     
     // -------------------------------------------------------
@@ -60,8 +60,8 @@ int main(int argc, char **argv)
     //Store computations
     A_sub.store_in(&b_A, {i,j});
     A_div.store_in(&b_A);
-    A_diag.store_in(&b_A, {i,l});
-    A_out.store_in(&b_A);
+    A_diag.store_in(&b_A, {i,i});
+    A_out.store_in(&b_A, {i,i});
 
     // -------------------------------------------------------
     // Code Generation

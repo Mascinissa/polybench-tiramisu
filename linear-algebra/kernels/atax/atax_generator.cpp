@@ -39,9 +39,9 @@ int main(int argc, char **argv) {
   // -------------------------------------------------------
   // Layer II
   // -------------------------------------------------------
-  Ax_init.then(Ax, computation::root)
-         .then(y_init, computation::root)
-         .then(y, computation::root);
+  y_init.then(Ax_init, computation::root)
+         .then(Ax, i)
+         .then(y, i);
 
   // -------------------------------------------------------
   // Layer III

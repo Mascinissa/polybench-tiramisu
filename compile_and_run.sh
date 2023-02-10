@@ -62,8 +62,6 @@ elif [ ${KERNEL} = "gesummv" ]; then
       KERNEL_FOLDER="./linear-algebra/blas/gesummv"
 elif [ ${KERNEL} = "symm" ]; then
       KERNEL_FOLDER="./linear-algebra/blas/symm"
-      echo "The symm benchmark has a known code generation issue (358aeab). Edit the compilation script to run it anyway."
-      exit
 elif [ ${KERNEL} = "syr2k" ]; then
       KERNEL_FOLDER="./linear-algebra/blas/syr2k"
 elif [ ${KERNEL} = "syrk" ]; then

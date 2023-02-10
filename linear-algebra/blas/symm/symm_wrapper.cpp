@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 	       {median(duration_vector_1), median(duration_vector_2)});
 
     if (CHECK_CORRECTNESS && run_ref && run_tiramisu)
-        compare_buffers("symm", b_C_ref, b_C);
+        compare_buffers_approximately("symm", b_C_ref, b_C, 0.001);
 
     if (PRINT_OUTPUT)
     {

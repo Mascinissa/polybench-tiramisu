@@ -41,31 +41,51 @@ int main(int argc, char **argv)
 
     //inputs
     input u("u", {i, j}, p_float64);
+    input v("v", {i, j}, p_float64);
+    input p("p", {i, j}, p_float64);
+    input q("q", {i, j}, p_float64);
+
 
     //Computations
-    computation v("v", {i_f,j_f}, 1.0);
-    computation q("q", {i_f,j_f}, 1.0);
-    computation p("p", {i_f,j_f}, 0.0);
+    computation v_comp("v_comp", {t, i}, 1.0);
+    computation p_comp("p_comp", {t, i}, 0.0);
+    computation q_comp("q_comp", {t, i}, v(0,i));
 
     computation p_col("p_col", {t,i,j}, expr(-c) / (p(i, j-1)*a+b));
     computation q_col("q_col", {t,i,j}, (u(j, i-1)*(-d)+u(j, i)*(1.0+2.0*d) - u(j, i+1)*f-q(i, j-1)*a)/(p(i, j-1)*a+b));
-    computation v_col("j_col", {t,i,j}, p(i, j) * v(i, j+1) + q(i, j));
+    computation v_col_last("v_col_last", {t, i}, 1.0);
+
+    computation v_col("v_col", {t,i,j}, p(i, j) * v(j+1, i) + q(i, j));
+
+    computation u_comp("u_comp", {t, i}, 1.0);
+    computation p_comp2("p_comp2", {t, i}, 0.0);
+    computation q_comp2("q_comp2", {t, i}, u(i,0));
 
     computation p_row("p_row", {t,i,j}, expr(-f) / (p(i, j-1)*d+e));
-    computation q_row("q_row", {t,i,j}, (v(j, i-1)*(-a)+v(j, i)*(1.0+2.0*a) - v(j, i+1)*c-q(i, j-1)*d)/(p(i, j-1)*d+e));
+    computation q_row("q_row", {t,i,j}, (v(i-1,j)*(-a)+v(i, j)*(1.0+2.0*a) - v(i+1, j)*c-q(i, j-1)*d)/(p(i, j-1)*d+e));
+
+    computation u_row_last("u_row_last", {t,i}, 1.0);
     computation u_row("u_row", {t,i,j}, p(i, j) * u(i, j+1) + q(i, j));
 
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
-    v.then(q, j_f)
-     .then(p, j_f)
-     .then(p_col, computation::root)
-     .then(q_col, j)
-     .then(v_col, i)
-     .then(p_row, t)
-     .then(q_row, j)
-     .then(u_row, i);
+    v_col.loop_reversal(2);
+    u_row.loop_reversal(2);
+
+    v_comp.then(p_comp, 1)
+     .then(q_comp, 1)
+     .then(p_col, 1)
+     .then(q_col, 2)
+     .then(v_col_last, 1)
+     .then(v_col, 1)
+     .then(u_comp, 0)
+     .then(p_comp2, 1)
+     .then(q_comp2, 1)
+     .then(p_row, 0)
+     .then(q_row, 2)
+     .then(u_row_last, 1)
+     .then(u_row, 1);
 
     
     // -------------------------------------------------------
@@ -80,16 +100,24 @@ int main(int argc, char **argv)
 
     //Store inputs
     u.store_in(&b_u);
-
-    //Store computations
     v.store_in(&b_v);
     q.store_in(&b_q);
     p.store_in(&b_p);
+
+    //Store computations
+    v_comp.store_in(&b_v, {0,i});
+    p_comp.store_in(&b_p, {i,0});
+    q_comp.store_in(&b_q, {i,0});
     p_col.store_in(&b_p,{i,j});
     q_col.store_in(&b_q,{i,j});
-    v_col.store_in(&b_v,{i,j});
+    v_col_last.store_in(&b_v, {N-1,i});
+    v_col.store_in(&b_v,{j,i});
+    u_comp.store_in(&b_u, {i,0});
+    p_comp2.store_in(&b_p, {i,0});
+    q_comp2.store_in(&b_q, {i,0});
     p_row.store_in(&b_p,{i,j});
     q_row.store_in(&b_q,{i,j});
+    u_row_last.store_in(&b_u,{i,N-1});
     u_row.store_in(&b_u,{i,j});
 
     // -------------------------------------------------------

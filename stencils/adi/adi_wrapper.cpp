@@ -32,37 +32,37 @@ int adi_ref(Halide::Buffer<double> u)
   e = 1.0+mul2;
   f = d;
 
-for (i=0; i<N; i++) {
-  for (j=0; j<N; j++) {
-    v(i,j)=1.0;
-    q(i,j)=1.0;
-    p(i,j)=0.0;
-  }
-}
+    for (t=1; t<=TSTEPS; t++) {
+        //Column Sweep
+        for (i=1; i<N-1; i++) {
+            v(0,i) = 1.0;
+            p(i,0) = 0.0;
+            q(i,0) = v(0,i);
+            for (j=1; j<N-1; j++) {
+                p(i,j) = -c / (a*p(i,j-1)+b);
+                q(i,j) = (-d*u(j,i-1)+(1.0+2.0*d)*u(j,i) - f*u(j,i+1)-a*q(i,j-1))/(a*p(i,j-1)+b);
+            }
 
- for (t=1; t<=TSTEPS; t++) {
-    //Column Sweep
-    for (i=1; i<N-1; i++) {
-      for (j=1; j<N-1; j++) {
-        p(i, j) = -c / (p(i, j-1)*a+b);
-        q(i, j) = ((u(j, i-1)*(-d)+u(j, i)*(1.0+2.0*d) - u(j, i+1)*f-q(i, j-1)*a)/(p(i, j-1)*a+b));
-      }
-      
-      for (j=1; j<N-1; j++) {
-        v(i, j) = p(i, j) * v(i, j+1) + q(i, j);
-      }
+            v(N-1,i) = 1.0;
+            for (j=N-2; j>=1; j--) {
+                v(j,i) = p(i,j) * v(j+1,i) + q(i,j);
+            }
+        }
+        //Row Sweep
+        for (i=1; i<N-1; i++) {
+            u(i,0) = 1.0;
+            p(i,0) = 0.0;
+            q(i,0) = u(i,0);
+            for (j=1; j<N-1; j++) {
+                p(i,j) = -f / (d*p(i,j-1)+e);
+                q(i,j) = (-a*v(i-1,j)+(1.0+2.0*a)*v(i,j) - c*v(i+1,j)-d*q(i,j-1))/(d*p(i,j-1)+e);
+            }
+            u(i,N-1) = 1.0;
+            for (j=N-2; j>=1; j--) {
+                u(i,j) = p(i,j) * u(i,j+1) + q(i,j);
+            }
+        }
     }
-    //Row Sweep
-    for (i=1; i<N-1; i++) {
-      for (j=1; j<N-1; j++) {
-        p(i, j) = -f / (p(i, j-1)*d+e);
-        q(i, j) = (v(j, i-1)*(-a)+v(j, i)*(1.0+2.0*a) - v(j, i+1)*c-q(i, j-1)*d)/(p(i, j-1)*d+e);
-      }
-      for (j=1; j<N-1; j++) {
-        u(i, j) = p(i, j) * u(i, j+1) + q(i, j);
-      }
-    }
-  }
   return 0;
 }
 

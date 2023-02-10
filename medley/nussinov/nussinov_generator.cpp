@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 
     //Iteration variables    
     var i("i", 0, N), j("j", 0, N), k("k");
+    var i_reversed("i_reversed");
     
 
     //inputs
@@ -31,20 +32,26 @@ int main(int argc, char **argv)
 
 
     //Computations
-    computation table_1("[NN]->{table_1[i,j]: 0<=i<NN and NN-i<=j<NN and 1<=j}", expr(), true, p_float64, global::get_implicit_function());
-    table_1.set_expression(expr(o_max, table(N-1-i, j), table(N-1-i, j-1)));
-    computation table_2("[NN]->{table_2[i,j]: 0<=i<NN and NN-i<=j<NN and 0<i}", expr(), true, p_float64, global::get_implicit_function());
-    table_2.set_expression(expr(o_max, table(N-1-i, j), table(N-1-i+1, j)));
-    computation table_3("[NN]->{table_3[i,j]: 0<=i<NN and NN-i<=j<NN and 1<=j and 0<i and NN-i<j}", expr(), true, p_float64, global::get_implicit_function());
-    table_3.set_expression(expr(o_max, table(N-1-i, j), table(N-1-i+1, j-1)+((seq(N-1-i)+seq(j))==3.0)));
-    computation table_4("[NN]->{table_4[i,j]: 0<=i<NN and NN-i<=j<NN and 1<=j and 0<i and j<=NN-i}", expr(), true, p_float64, global::get_implicit_function());
-    table_4.set_expression(expr(o_max, table(N-1-i, j), table(N-1-i+1, j-1)));
-    computation table_5("[NN]->{table_5[i,j,k]: 0<=i<NN and NN-i<=j<NN and NN-i<=k<j}", expr(), true, p_float64, global::get_implicit_function());
-    table_5.set_expression(expr(o_max, table(N-1-i, j), table(N-1-i, k) + table(k+1, j)));
+    computation table_1("[NN]->{table_1[i,j]: 0<=i<NN and i+1<=j<NN and 0<=j-1}", expr(), true, p_float64, global::get_implicit_function());
+    table_1.set_expression(expr(o_max, table(i, j), table(i, j-1)));
+    computation table_2("[NN]->{table_2[i,j]: 0<=i<NN and i+1<=j<NN and i+1<NN}", expr(), true, p_float64, global::get_implicit_function());
+    table_2.set_expression(expr(o_max, table(i, j), table(i+1, j)));
+    computation table_3("[NN]->{table_3[i,j]: 0<=i<NN and i+1<=j<NN and 0<=j-1 and i+1<NN and i<j-1}", expr(), true, p_float64, global::get_implicit_function());
+    table_3.set_expression(expr(o_max, table(i, j), table(i+1, j-1)+((seq(i)+seq(j))==3.0)));
+    computation table_4("[NN]->{table_4[i,j]: 0<=i<NN and i+1<=j<NN and 0<=j-1 and i+1<NN and i>=j-1}", expr(), true, p_float64, global::get_implicit_function());
+    table_4.set_expression(expr(o_max, table(i, j), table(i+1, j-1)));
+    computation table_5("[NN]->{table_5[i,j,k]: 0<=i<NN and i+1<=j<NN and i+1<=k<j}", expr(), true, p_float64, global::get_implicit_function());
+    table_5.set_expression(expr(o_max, table(i, j), table(i, k) + table(k+1, j)));
     
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
+    table_1.loop_reversal(i, i_reversed);
+    table_2.loop_reversal(i, i_reversed);
+    table_3.loop_reversal(i, i_reversed);
+    table_4.loop_reversal(i, i_reversed);
+    table_5.loop_reversal(i, i_reversed);
+
     table_1.then(table_2, j)
            .then(table_3, j)
            .then(table_4, j)
@@ -62,11 +69,11 @@ int main(int argc, char **argv)
     seq.store_in(&b_seq);  
 
     //Store computations
-    table_1.set_access("[NN]->{table_1[i,j]->b_table[NN-1-i,j]}");
-    table_2.set_access("[NN]->{table_2[i,j]->b_table[NN-1-i,j]}");
-    table_3.set_access("[NN]->{table_3[i,j]->b_table[NN-1-i,j]}");
-    table_4.set_access("[NN]->{table_4[i,j]->b_table[NN-1-i,j]}");
-    table_5.set_access("[NN]->{table_5[i,j,k]->b_table[NN-1-i,j]}");
+    table_1.store_in(&b_table, {i, j});
+    table_2.store_in(&b_table, {i, j});
+    table_3.store_in(&b_table, {i, j});
+    table_4.store_in(&b_table, {i, j});
+    table_5.store_in(&b_table, {i, j});
 
     // -------------------------------------------------------
     // Code Generation

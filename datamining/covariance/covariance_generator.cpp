@@ -26,24 +26,36 @@ int main(int argc, char **argv)
 
     //inputs
     input data("data", {l, j}, p_float64);
-
+    input mean("mean", {j}, p_float64);
+    input cov("cov", {i,j}, p_float64);
 
     //Computations
     
     computation mean_init("mean_init", {j}, 0.0);
-    computation mean("mean", {l,j}, p_float64);
-    mean.set_expression(mean(l,j) + data(l,j)/expr(cast(p_float64, N)));
-    
+    computation mean_sum("mean_sum", {j,l}, mean(j) + data(l,j));
+
+    computation mean_div("mean_div", {j}, mean(j) /expr(cast(p_float64, N)));
+
+    computation data_sub("data_sub", {l,j}, data(l,j)-mean(j));
+
     computation cov_init("conv_init", {i,j}, 0.0);
-    computation cov("cov", {i,j,k}, p_float64);
-    cov.set_expression(cov(i,j,k) + (data(k,i)-mean(0,i))*(data(k,j)-mean(0,j))/expr(cast(p_float64, N-1)));
+
+    computation cov_prod("cov_prod", {i,j,k}, cov(i,j) + data(k,i)*data(k,j));
+
+    computation cov_div("cov_div", {i,j}, cov(i,j)/expr(cast(p_float64, N-1)) );
+
+    computation cov_sym("cov_sym", {i,j}, cov(i,j));
 
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
-    mean_init.then(mean, computation::root)
+    mean_init.then(mean_sum, j)
+             .then(mean_div,j)
+             .then(data_sub,computation::root)
              .then(cov_init, computation::root)
-             .then(cov, computation::root);
+             .then(cov_prod, j)
+             .then(cov_div, j)
+             .then(cov_sym, j);
 
     // -------------------------------------------------------
     // Layer III
@@ -56,13 +68,19 @@ int main(int argc, char **argv)
 
     //Store inputs
     data.store_in(&b_data);
-    
+    mean.store_in(&b_mean);
+    cov.store_in(&b_cov);
+
 
     //Store computations
     mean_init.store_in(&b_mean);
-    mean.store_in(&b_mean, {j});
+    mean_sum.store_in(&b_mean, {j});
+    mean_div.store_in(&b_mean, {j});
+    data_sub.store_in(&b_data);
     cov_init.store_in(&b_cov);
-    cov.store_in(&b_cov, {i,j});
+    cov_prod.store_in(&b_cov, {i,j});
+    cov_div.store_in(&b_cov, {i,j});
+    cov_sym.store_in(&b_cov, {j,i});
 
     // -------------------------------------------------------
     // Code Generation

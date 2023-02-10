@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     constant MM("MM", M);
 
     //Iteration variables    
-    var i("i", 0, M), j("j", 0, N), k("k", 0, M);
+    var i("i", 0, M), j("j", 0, N), k("k");
     
 
     //inputs
@@ -33,17 +33,16 @@ int main(int argc, char **argv)
 
 
     //Computations
-    
-
     computation AB("[MM,NN]->{AB[i,j,k]: 0<=i<MM and 0<=j<NN and i+1<=k<MM}", expr(), true, p_float64, global::get_implicit_function());
-    AB.set_expression(AB(i,j,k) + A(k,i)*B(k,j));
-    computation B_out("B_out", {i, j}, AB(i,j,0)*alpha);
+    AB.set_expression(B(i,j) + A(k,i)*B(k,j));
+    computation B_out("[MM,NN]->{B_out[i,j]: 0<=i<MM and 0<=j<NN}", expr(), true, p_float64, global::get_implicit_function());
+    B_out.set_expression(B(i,j)*alpha);
 
     
     // -------------------------------------------------------
     // Layer II
     // -------------------------------------------------------
-    AB.then(B_out, computation::root);
+    AB.then(B_out, j);
 
     // -------------------------------------------------------
     // Layer III

@@ -31,6 +31,7 @@ int main(int argc, char **argv)
     input y("y", {i}, p_float64);
     input alpha("alpha", {}, p_float64);
     input beta("beta", {}, p_float64);
+    input sum("sum", {}, p_float64);
 
     computation y_0("y_0", {d}, -r(0));
     computation beta_0("beta_0", {d}, 1.0);
@@ -40,8 +41,8 @@ int main(int argc, char **argv)
     computation beta_1("beta_1", {k}, (1-alpha(0)*alpha(0))*beta(0));
     computation sum_1("sum_1", {k}, 0.0);
     computation sum_2("[NN]->{sum_2[k,i]: 1<=k<NN and 0<=i<k}", expr(), true, p_float64, global::get_implicit_function());
-    sum_2.set_expression(sum_2(k,i)+r(k-i-1)*y(i));
-    computation alpha_1("alpha_1", {k}, - (r(k) + sum_2(0,0))/beta(0));
+    sum_2.set_expression(sum(0)+r(k-i-1)*y(i));
+    computation alpha_1("alpha_1", {k}, - (r(k) + sum(0))/beta(0));
     computation z("[NN]->{z[k,i]: 1<=k<NN and 0<=i<k}", expr(), true, p_float64, global::get_implicit_function());
     z.set_expression(y(i) + alpha(0)*y(k-i-1));
     computation y_1("[NN]->{y_1[k,i]: 1<=k<NN and 0<=i<k}", expr(), true, p_float64, global::get_implicit_function());
@@ -79,7 +80,8 @@ int main(int argc, char **argv)
     r.store_in(&b_r);  
     y.store_in(&b_y);  
     alpha.store_in(&b_alpha);  
-    beta.store_in(&b_beta);  
+    beta.store_in(&b_beta);
+    sum.store_in(&b_sum);
 
     //Store computations
     beta_1.store_in(&b_beta, {});
