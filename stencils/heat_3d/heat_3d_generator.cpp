@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
     //Iteration variables    
     var i_f("i_f", 0, N), j_f("j_f", 0, N), k_f("k_f", 0, N);
-    var t("t", 1, TSTEPS), i("i", 1, N-1), j("j", 1, N-1), k("k", 1, N-1);
+    var t("t", 1, TSTEPS+1), i("i", 1, N-1), j("j", 1, N-1), k("k", 1, N-1);
     
     //inputs
     input A("A", {i_f, j_f, k_f}, p_float64);
