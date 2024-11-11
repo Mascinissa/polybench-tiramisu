@@ -54,7 +54,7 @@ int main(int argc, char **argv)
            .then(CD_init, computation::root)
            .then(CD, m)
            .then(E_init, computation::root)
-           .then(E, m;
+           .then(E, m);
 
     // -------------------------------------------------------
     // Layer III
