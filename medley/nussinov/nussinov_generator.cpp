@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     computation table_2("[NN]->{table_2[i,j]: 0<=i<NN and i+1<=j<NN and i+1<NN}", expr(), true, p_float64, global::get_implicit_function());
     table_2.set_expression(expr(o_max, table(i, j), table(i+1, j)));
     computation table_3("[NN]->{table_3[i,j]: 0<=i<NN and i+1<=j<NN and 0<=j-1 and i+1<NN and i<j-1}", expr(), true, p_float64, global::get_implicit_function());
-    table_3.set_expression(expr(o_max, table(i, j), table(i+1, j-1)+((seq(i)+seq(j))==3.0)));
+    table_3.set_expression(expr(o_max, table(i, j), table(i+1, j-1) + cast(p_float64,((seq(i)+seq(j))==3.0))));
     computation table_4("[NN]->{table_4[i,j]: 0<=i<NN and i+1<=j<NN and 0<=j-1 and i+1<NN and i>=j-1}", expr(), true, p_float64, global::get_implicit_function());
     table_4.set_expression(expr(o_max, table(i, j), table(i+1, j-1)));
     computation table_5("[NN]->{table_5[i,j,k]: 0<=i<NN and i+1<=j<NN and i+1<=k<j}", expr(), true, p_float64, global::get_implicit_function());
