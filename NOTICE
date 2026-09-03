@@ -1,0 +1,20 @@
+This repository vendors and derives from PolyBench/C 4.2.1:
+
+- utilities/polybench.h and utilities/polybench.c are verbatim, unmodified
+  copies of the corresponding files from PolyBench/C 4.2.1 (stamped
+  May 10, 2016).
+- The init_array and print_array function bodies embedded in the generated
+  function_*_init.h sidecars are extracted verbatim from the PolyBench/C
+  4.2.1 benchmark sources.
+- The benchmark computations themselves are reimplementations of the
+  PolyBench/C 4.2.1 kernels in the Tiramisu language, using PolyBench's
+  dataset sizes, data types, and initialization semantics.
+
+PolyBench/C is by Louis-Noël Pouchet and Tomofumi Yuki:
+    Web address: http://polybench.sourceforge.net
+    Contact: pouchet.ohio-state.edu, tomofumi.yuki.fr
+
+PolyBench/C's copyright and terms apply to the vendored/derived portions;
+see the headers of utilities/polybench.{c,h} and the PolyBench/C
+distribution. Everything else in this repository is under the MIT license
+(see LICENSE).

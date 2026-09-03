@@ -1,0 +1,28 @@
+name: validate
+
+on:
+  push:
+    branches: [main, v2]
+  pull_request:
+
+jobs:
+  generated-files-and-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch PolyBench/C 4.2.1
+        run: ./tools/get_polybench_c.sh "${{ runner.temp }}/PolyBenchC-4.2.1"
+
+      - name: Regenerate sidecars and wrappers
+        run: |
+          python3 tools/generate_polybench_init_sidecars.py \
+            --polybench-c "${{ runner.temp }}/PolyBenchC-4.2.1"
+
+      - name: Check generated files are up to date
+        run: git diff --exit-code
+
+      - name: Init parity vs stock PolyBench/C
+        run: |
+          python3 tools/validate_init_parity.py --keep-going \
+            --polybench-c "${{ runner.temp }}/PolyBenchC-4.2.1"

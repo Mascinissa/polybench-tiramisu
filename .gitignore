@@ -33,3 +33,16 @@
 
 # Benchmark results
 performance_cpu.csv
+
+# Benchmark build artifacts (compile_and_run.sh)
+*_generator
+!*_generator.cpp
+*_run
+*.o.h
+*.dump
+
+# Packaged archives
+*.zip
+
+# Jupyter
+.ipynb_checkpoints/
