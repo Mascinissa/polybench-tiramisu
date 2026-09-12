@@ -1,172 +1,145 @@
 #!/bin/bash
+# Standalone build & measure for one PolyBench-Tiramisu benchmark.
+#
+#   ./compile_and_run.sh <benchmark> <SIZE> [n_measurements]
+#
+#   <benchmark>       e.g. gemm, 2mm, floyd_warshall, jacobi1d, heat3d
+#   <SIZE>            MINI | SMALL | MEDIUM | LARGE | XLARGE
+#   [n_measurements]  default 5 (PolyBench's time_benchmark.sh count)
+#
+# Measurement methodology is PolyBench/C 4.2.1's: page-aligned
+# allocation, deterministic init_array, cache flush before the timer, one
+# kernel invocation per fresh process. Times are printed in milliseconds,
+# followed by the PolyBench-normalized time (drop min & max, mean of the
+# rest) when n_measurements >= 3.
+#
+# Environment:
+#   TIRAMISU_ROOT       Tiramisu installation (required unless TPB_* set).
+#                       Both the classic source layout (3rdParty/...) and
+#                       the install layout (install/include, install/lib*)
+#                       are detected.
+#   TPB_INCLUDES        colon-separated include dirs (overrides detection)
+#   TPB_LIBS            colon-separated lib dirs (overrides detection)
+#   TPB_EXTRA_INCLUDES  colon-separated dirs appended to the include path
+#   TPB_EXTRA_LIBS      colon-separated dirs appended to the lib path
+#   CXX                 compiler (default g++)
+#   TPB_DUMP=1          dump live-out arrays (PolyBench format) to
+#                       <function>.dump for correctness checking
+#   TPB_KEEP=1          keep build artifacts
 
-if [ $# -eq 0 ]; then
-      echo "Usage: ./complile_and_run.sh <benchmark_name> <problem_size>"
-      echo "Example: ./complile_and_run.sh atax MEDIUM"
-      exit
-fi
+set -e
 
-if [ -z ${TIRAMISU_ROOT} ]
-then
-      echo "Tiramisu path not defined. Please specify the path to the Tiramisu root folder"
-      echo "export TIRAMISU_ROOT=<path/to/Tiramisu>"
-      exit
-fi
-
-# Define data sizes, possible value: -DTIRAMISU_XLARGE, -DTIRAMISU_LARGE, -DTIRAMISU_MEDIUM, -DTIRAMISU_SMALL
-PBSIZE=$2
-if [[ $2 = "MINI" ]]; 
-then
-      DEFINED_SIZE="-DTIRAMISU_MINI"
-elif [[ $2 = "SMALL" ]]
-then
-      DEFINED_SIZE="-DTIRAMISU_SMALL"
-elif [[ $2 = "MEDIUM" ]]
-then
-      DEFINED_SIZE="-DTIRAMISU_MEDIUM"
-elif [[ $2 = "LARGE" ]]
-then
-      DEFINED_SIZE="-DTIRAMISU_LARGE"
-elif [[ $2 = "EXTRALARGE" ]]
-then
-      DEFINED_SIZE="-DTIRAMISU_XLARGE"
-else 
-      echo "Unrecognized size"
-      PBSIZE="MEDIUM"
-      DEFINED_SIZE="-DTIRAMISU_MEDIUM"
+if [ $# -lt 2 ]; then
+    echo "Usage: ./compile_and_run.sh <benchmark> <SIZE> [n_measurements]"
+    echo "Example: ./compile_and_run.sh gemm MEDIUM 5"
+    exit 1
 fi
 
 KERNEL=$1
+SIZE=$2
+RUNS=${3:-5}
+[ "${SIZE}" = "EXTRALARGE" ] && SIZE=XLARGE
 
-if [ ${KERNEL} = "correlation" ]; then
-      KERNEL_FOLDER="./datamining/correlation"
-elif [ ${KERNEL} = "covariance" ]; then
-      KERNEL_FOLDER="./datamining/covariance"
-elif [ ${KERNEL} = "2mm" ]; then
-      KERNEL_FOLDER="./linear-algebra/kernels/2mm"
-elif [ ${KERNEL} = "3mm" ]; then
-      KERNEL_FOLDER="./linear-algebra/kernels/3mm"
-elif [ ${KERNEL} = "atax" ]; then
-      KERNEL_FOLDER="./linear-algebra/kernels/atax"
-elif [ ${KERNEL} = "bicg" ]; then
-      KERNEL_FOLDER="./linear-algebra/kernels/bicg"
-elif [ ${KERNEL} = "doitgen" ]; then
-      KERNEL_FOLDER="./linear-algebra/kernels/doitgen"
-elif [ ${KERNEL} = "mvt" ]; then
-      KERNEL_FOLDER="./linear-algebra/kernels/mvt"
-elif [ ${KERNEL} = "gemm" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/gemm"
-elif [ ${KERNEL} = "gemver" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/gemver"
-elif [ ${KERNEL} = "gesummv" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/gesummv"
-elif [ ${KERNEL} = "symm" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/symm"
-elif [ ${KERNEL} = "syr2k" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/syr2k"
-elif [ ${KERNEL} = "syrk" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/syrk"
-elif [ ${KERNEL} = "trmm" ]; then
-      KERNEL_FOLDER="./linear-algebra/blas/trmm"
-elif [ ${KERNEL} = "cholesky" ]; then
-      KERNEL_FOLDER="./linear-algebra/solvers/cholesky"
-elif [ ${KERNEL} = "durbin" ]; then
-      KERNEL_FOLDER="./linear-algebra/solvers/durbin"
-elif [ ${KERNEL} = "gramschmidt" ]; then
-      KERNEL_FOLDER="./linear-algebra/solvers/gramschmidt"
-elif [ ${KERNEL} = "lu" ]; then
-      KERNEL_FOLDER="./linear-algebra/solvers/lu"
-elif [ ${KERNEL} = "ludcmp" ]; then
-      KERNEL_FOLDER="./linear-algebra/solvers/ludcmp"
-elif [ ${KERNEL} = "trisolv" ]; then
-      KERNEL_FOLDER="./linear-algebra/solvers/trisolv"
-elif [ ${KERNEL} = "deriche" ]; then
-      KERNEL_FOLDER="./medley/deriche"
-elif [ ${KERNEL} = "floyd_warshall" ]; then
-      KERNEL_FOLDER="./medley/floyd_warshall"
-elif [ ${KERNEL} = "nussinov" ]; then
-      KERNEL_FOLDER="./medley/nussinov"
-elif [ ${KERNEL} = "adi" ]; then
-      KERNEL_FOLDER="./stencils/adi"
-elif [ ${KERNEL} = "fdtd_2d" ]; then
-      KERNEL_FOLDER="./stencils/fdtd_2d"
-elif [ ${KERNEL} = "heat_3d" ]; then
-      KERNEL_FOLDER="./stencils/heat_3d"
-elif [ ${KERNEL} = "jacobi_1d" ]; then
-      KERNEL_FOLDER="./stencils/jacobi_1d"
-elif [ ${KERNEL} = "jacobi_2d" ]; then
-      KERNEL_FOLDER="./stencils/jacobi_2d"
-elif [ ${KERNEL} = "seidel_2d" ]; then
-      KERNEL_FOLDER="./stencils/seidel_2d"
-else 
-      echo "Unrecognized benchmark"
-      exit
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+FUNC="function_${KERNEL}_${SIZE}"
+
+GENERATOR=$(find "${REPO_ROOT}" -path "${REPO_ROOT}/.git" -prune -o -name "${FUNC}_generator.cpp" -print | head -n 1)
+if [ -z "${GENERATOR}" ]; then
+    echo "Benchmark variant not found: ${FUNC}"
+    echo "Available benchmarks:"
+    find "${REPO_ROOT}" -path "${REPO_ROOT}/.git" -prune -o -name "function_*_MINI_generator.cpp" -print \
+        | sed 's/.*function_\(.*\)_MINI_generator.cpp/  \1/' | sort
+    exit 1
+fi
+KERNEL_FOLDER="$(dirname "${GENERATOR}")"
+
+# ---------------------------------------------------------------------------
+# Locate Tiramisu (includes + libs)
+# ---------------------------------------------------------------------------
+if [ -n "${TPB_INCLUDES}" ] && [ -n "${TPB_LIBS}" ]; then
+    INCLUDE_DIRS="${TPB_INCLUDES}"
+    LIB_DIRS="${TPB_LIBS}"
+elif [ -n "${TIRAMISU_ROOT}" ] && [ -d "${TIRAMISU_ROOT}/install/include" ]; then
+    # install layout
+    INCLUDE_DIRS="${TIRAMISU_ROOT}/install/include"
+    LIB_DIRS="${TIRAMISU_ROOT}/install/lib:${TIRAMISU_ROOT}/install/lib64"
+elif [ -n "${TIRAMISU_ROOT}" ] && [ -d "${TIRAMISU_ROOT}/3rdParty" ]; then
+    # classic source layout; tolerate both Halide dir arrangements
+    INCLUDE_DIRS="${TIRAMISU_ROOT}/include"
+    LIB_DIRS="${TIRAMISU_ROOT}/build"
+    for d in "${TIRAMISU_ROOT}/3rdParty/Halide/include" \
+             "${TIRAMISU_ROOT}/3rdParty/Halide/install/include" \
+             "${TIRAMISU_ROOT}/3rdParty/isl/include" \
+             "${TIRAMISU_ROOT}/3rdParty/isl/build/include"; do
+        [ -d "$d" ] && INCLUDE_DIRS="${INCLUDE_DIRS}:$d"
+    done
+    for d in "${TIRAMISU_ROOT}/3rdParty/Halide/lib" \
+             "${TIRAMISU_ROOT}/3rdParty/Halide/lib64" \
+             "${TIRAMISU_ROOT}/3rdParty/Halide/install/lib" \
+             "${TIRAMISU_ROOT}/3rdParty/Halide/install/lib64" \
+             "${TIRAMISU_ROOT}/3rdParty/isl/build/lib"; do
+        [ -d "$d" ] && LIB_DIRS="${LIB_DIRS}:$d"
+    done
+else
+    echo "Tiramisu not found. Either:"
+    echo "  export TIRAMISU_ROOT=<path/to/tiramisu>"
+    echo "or set TPB_INCLUDES / TPB_LIBS explicitly."
+    exit 1
+fi
+[ -n "${TPB_EXTRA_INCLUDES}" ] && INCLUDE_DIRS="${INCLUDE_DIRS}:${TPB_EXTRA_INCLUDES}"
+[ -n "${TPB_EXTRA_LIBS}" ] && LIB_DIRS="${LIB_DIRS}:${TPB_EXTRA_LIBS}"
+
+CXX=${CXX:-g++}
+CXXFLAGS="-std=c++17 -O3 -fno-rtti"
+
+INCLUDES="-I${REPO_ROOT}/utilities -I${KERNEL_FOLDER}"
+for d in $(echo "${INCLUDE_DIRS}" | tr ':' ' '); do INCLUDES="${INCLUDES} -I$d"; done
+LIB_FLAGS=""
+for d in $(echo "${LIB_DIRS}" | tr ':' ' '); do LIB_FLAGS="${LIB_FLAGS} -L$d"; done
+export LD_LIBRARY_PATH="${LIB_DIRS}:${LD_LIBRARY_PATH}"
+
+cd "${KERNEL_FOLDER}"
+
+# ---------------------------------------------------------------------------
+# 1. Compile & run the Tiramisu generator -> ${FUNC}.o
+# ---------------------------------------------------------------------------
+echo "[1/3] Compiling and running the Tiramisu generator (${FUNC})"
+${CXX} ${CXXFLAGS} ${INCLUDES} "${FUNC}_generator.cpp" ${LIB_FLAGS} \
+    -ltiramisu -lHalide -lisl -lpthread -ldl -o "${FUNC}_generator"
+./"${FUNC}_generator" > /dev/null
+
+# ---------------------------------------------------------------------------
+# 2. Compile the standalone measurement wrapper
+# ---------------------------------------------------------------------------
+echo "[2/3] Compiling the measurement wrapper"
+${CXX} ${CXXFLAGS} ${INCLUDES} "${FUNC}_wrapper.cpp" "${FUNC}.o" ${LIB_FLAGS} \
+    -ltiramisu -lHalide -lpthread -ldl -lm -o "${FUNC}_run"
+
+# ---------------------------------------------------------------------------
+# 3. Measure (PolyBench methodology: one kernel call per fresh process)
+# ---------------------------------------------------------------------------
+echo "[3/3] Running ${RUNS} measurement(s)"
+if [ "${TPB_DUMP}" = "1" ]; then
+    TIMES=$(TIRALIB_DUMP_ARRAYS=1 ./"${FUNC}_run" "${RUNS}" 2> "${FUNC}.dump")
+    echo "live-out arrays dumped to ${KERNEL_FOLDER}/${FUNC}.dump"
+else
+    TIMES=$(./"${FUNC}_run" "${RUNS}")
 fi
 
-CORES=4
-EXTRA_LIBRARIES="-ldl"
-
-# Paths to Tiramisu 3rd party libraries
-ISL_INCLUDE_DIRECTORY=${TIRAMISU_ROOT}/3rdParty/isl/build/include/
-ISL_LIB_DIRECTORY=${TIRAMISU_ROOT}/3rdParty/isl/build/lib/
-HALIDE_SOURCE_DIRECTORY=${TIRAMISU_ROOT}/3rdParty/Halide
-HALIDE_LIB_DIRECTORY=${TIRAMISU_ROOT}/3rdParty/Halide/lib
-
-CXXFLAGS="-std=c++11 -O3 -fno-rtti -mavx2"
-
-CXX=g++
-
-# Compile options
-# - Make ${CXX} dump generated assembly
-#   CXXFLAGS: -g -Wa,-alh
-# - Get info about ${CXX} vectorization
-#   CXXFLAGS -fopt-info-vec
-# - Pass options to the llvm compiler
-#   HL_LLVM_ARGS="-help" 
-# - Set thread number for Halide
-#   HL_NUM_THREADS=32
-# - Execution env variables
-#   OMP_NUM_THREADS=48
-#   to set the number of threads to use by OpenMP.
-# - Command to run Vtune
-#   source /data/scratch/yunming/intel_parallel_studio_cluster/parallel_studio_xe_2017/install/vtune_amplifier_xe/amplxe-vars.sh
-#   amplxe-cl -collect hpc-performance -result-dir vtune_results -quiet ./binary
-#   Guide: https://software.intel.com/en-us/vtune-amplifier-help-amplxe-cl-command-syntax
-
-INCLUDES="-I${MKL_PREFIX}/include/ -I${TIRAMISU_ROOT}/include/ -I${HALIDE_SOURCE_DIRECTORY}/include/ -I${ISL_INCLUDE_DIRECTORY} -I${KERNEL_FOLDER}/ -I${PWD}/utilities/"
-LIBRARIES="-ltiramisu ${MKL_FLAGS} -lHalide -lisl -lz -lpthread ${EXTRA_LIBRARIES}"
-LIBRARIES_DIR="-L${MKL_PREFIX}/lib/${MKL_LIB_PATH_SUFFIX} -L${HALIDE_LIB_DIRECTORY}/ -L${ISL_LIB_DIRECTORY}/ -L${TIRAMISU_ROOT}/build/"
-
-echo "Compiling ${KERNEL} ${PBSIZE} "
-
-cd ${KERNEL_FOLDER}
-
-rm -rf ${KERNEL}_generator ${KERNEL}_wrapper generated_${KERNEL}.o generated_${KERNEL}_halide.o
-
-# Generate code from Tiramisu
-${CXX} ${LANKA_OPTIONS} $CXXFLAGS ${INCLUDES} ${DEFINED_SIZE} ${KERNEL}_generator.cpp ${LIBRARIES_DIR} ${LIBRARIES}                       -o ${KERNEL}_generator
-echo "Running ${KERNEL} ${PBSIZE} generator (Tiramisu)"
-
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HALIDE_LIB_DIRECTORY}:${ISL_LIB_DIRECTORY}:${TIRAMISU_ROOT}/build/:${MKL_PREFIX}/lib/${MKL_LIB_PATH_SUFFIX} DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${HALIDE_LIB_DIRECTORY}:${TIRAMISU_ROOT}/build/:${MKL_PREFIX}/lib/${MKL_LIB_PATH_SUFFIX} ./${KERNEL}_generator
-
-if [ $? -ne 0 ]; then
-	exit
+echo "times (ms): ${TIMES}"
+if command -v python3 > /dev/null; then
+    echo "${TIMES}" | python3 -c '
+import sys
+times = [float(x) for x in sys.stdin.read().split()]
+if len(times) >= 3:
+    mid = sorted(times)[1:-1]
+    mean = sum(mid) / len(mid)
+    dev = max(abs(t - mean) for t in mid) / mean * 100 if mean else 0.0
+    print(f"polybench-normalized time (drop min/max, mean of middle {len(mid)}): "
+          f"{mean:.6f} ms (max deviation {dev:.2f}%)")
+'
 fi
 
-# echo "Compiling ${KERNEL} wrapper"
-${CXX} ${LANKA_OPTIONS} $CXXFLAGS ${INCLUDES} ${DEFINED_SIZE} ${KERNEL}_wrapper.cpp   ${LIBRARIES_DIR} ${LIBRARIES} generated_${KERNEL}.o ${LIBRARIES} -o ${KERNEL}_wrapper
-echo "Running ${KERNEL} ${PBSIZE} wrapper"
-# To enable profiling:
-## Perf:
-#PROFILING_COMMAND="perf stat -e cycles,instructions,cache-misses,L1-icache-load-misses,LLC-load-misses,dTLB-load-misses,cpu-migrations,context-switches,bus-cycles,cache-references,minor-faults"
-## Vtune:
-#VTUNE_METRIC=hpc-performance
-#VTUNE_METRIC=memory-access
-#PROFILING_COMMAND="amplxe-cl -collect ${VTUNE_METRIC} -result-dir vtune_results -quiet"
-#rm -rf vtune_results
-
-RUN_REF=1 RUN_TIRAMISU=1 HL_NUM_THREADS=$CORES LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HALIDE_LIB_DIRECTORY}:${ISL_LIB_DIRECTORY}:${TIRAMISU_ROOT}/build/:${MKL_PREFIX}/lib/${MKL_LIB_PATH_SUFFIX} DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${HALIDE_LIB_DIRECTORY}:${TIRAMISU_ROOT}/build/:${MKL_PREFIX}/lib/${MKL_LIB_PATH_SUFFIX} ${PROFILING_COMMAND} ./${KERNEL}_wrapper
-
-rm -rf ${KERNEL}_generator ${KERNEL}_wrapper generated_${KERNEL}.o generated_${KERNEL}.o.h
-
-cd -
+if [ "${TPB_KEEP}" != "1" ]; then
+    rm -f "${FUNC}_generator" "${FUNC}_run" "${FUNC}.o" "${FUNC}.o.h"
+fi
